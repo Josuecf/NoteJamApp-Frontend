@@ -1,11 +1,10 @@
-<ion-header>
-  <ion-toolbar class="notes-toolbar">
-    <ion-buttons slot="start">
+<app-collapsible-header #pageHeader [title]="(folder$ | async)?.name || 'Notas'">
+    <ion-buttons header-start slot="start">
       <ion-button (click)="backToFolders()" aria-label="Volver a carpetas">
         <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-buttons slot="end">
+    <ion-buttons header-end slot="end">
       <ion-button aria-label="Más opciones">
         <ion-icon slot="icon-only" name="ellipsis-horizontal"></ion-icon>
       </ion-button>
@@ -13,10 +12,9 @@
         <ion-icon slot="icon-only" name="add-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+</app-collapsible-header>
 
-<ion-content>
+<ion-content [class.header-collapsed]="pageHeader.isScrolled" [scrollEvents]="true" (ionScroll)="pageHeader.handleScroll($event)">
   <main class="notes-container">
     <ng-container *ngIf="notes$ | async as notes">
       <header class="page-heading">

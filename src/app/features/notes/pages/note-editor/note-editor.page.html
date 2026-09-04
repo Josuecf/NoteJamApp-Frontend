@@ -1,12 +1,10 @@
-<ion-header [class.view-mode]="isViewMode">
-  <ion-toolbar>
-    <ion-buttons slot="start">
+<app-collapsible-header #pageHeader [title]="title || 'Nota'" [viewMode]="isViewMode">
+    <ion-buttons header-start slot="start">
       <ion-button (click)="backToNotes()" aria-label="Volver a notas">
         <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>{{ title || 'Nota' }}</ion-title>
-    <ion-buttons slot="end">
+    <ion-buttons header-end slot="end">
       <ion-button *ngIf="!isViewMode" [disabled]="isSaving || isLoading" (click)="save()">
         {{ isSaving ? 'Guardando…' : 'Guardar' }}
       </ion-button>
@@ -14,10 +12,9 @@
         <ion-icon slot="icon-only" name="ellipsis-horizontal"></ion-icon>
       </ion-button>
     </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+</app-collapsible-header>
 
-<ion-content [fullscreen]="true" [class.view-mode]="isViewMode">
+<ion-content [fullscreen]="true" [class.header-collapsed]="pageHeader.isScrolled" [scrollEvents]="true" (ionScroll)="pageHeader.handleScroll($event)" [class.view-mode]="isViewMode">
   <main class="editor-container" *ngIf="!isLoading; else loadingState">
     <header class="note-heading">
       <h1 *ngIf="isViewMode">{{ title }}</h1>

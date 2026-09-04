@@ -1,9 +1,3 @@
-.notes-toolbar {
-  --background: var(--nc-background);
-  --border-width: 0;
-  padding-inline: max(var(--nc-space-1), calc(var(--nc-page-gutter) - 12px));
-}
-
 .add-button {
   --background: var(--nc-primary);
   --border-radius: var(--nc-radius-round);

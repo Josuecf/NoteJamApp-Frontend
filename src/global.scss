@@ -63,8 +63,8 @@ select {
 }
 
 ion-header ion-toolbar {
-	--border-width: 0 0 1px;
-	--border-color: var(--ion-border-color);
+	--border-width: 0;
+	--border-color: transparent;
 }
 
 ion-card {
@@ -89,13 +89,49 @@ ion-button {
 	text-transform: none;
 }
 
-app-folders ion-footer,
+app-folders .empty-state {
+	margin: var(--nc-space-8) auto;
+	max-width: 360px;
+	padding: var(--nc-space-8) var(--nc-space-6);
+	text-align: center;
+}
+
+app-folders .empty-state h1 {
+	font-size: var(--nc-font-size-section);
+	margin-bottom: var(--nc-space-2);
+}
+
+app-folders .empty-state p {
+	color: var(--nc-text-secondary);
+	margin: 0;
+}
+
+.page-heading h1,
+.note-heading h1,
+.note-heading .note-title {
+	transition: opacity 420ms cubic-bezier(0.22, 1, 0.36, 1), transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+ion-content.header-collapsed .page-heading h1,
+ion-content.header-collapsed .note-heading h1,
+ion-content.header-collapsed .note-heading .note-title {
+	opacity: 0;
+	transform: translateY(-8px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.page-heading h1,
+	.note-heading h1,
+	.note-heading .note-title {
+		transition: none;
+	}
+}
+
 app-notes ion-footer {
 	background: var(--nc-surface);
 	border-top: 1px solid var(--nc-border);
 }
 
-app-folders .bottom-navigation,
 app-notes .bottom-navigation {
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
@@ -104,7 +140,6 @@ app-notes .bottom-navigation {
 	padding: var(--nc-space-2) var(--nc-space-4) calc(var(--nc-space-2) + env(safe-area-inset-bottom));
 }
 
-app-folders .bottom-navigation button,
 app-notes .bottom-navigation button {
 	align-items: center;
 	background: transparent;
@@ -117,13 +152,11 @@ app-notes .bottom-navigation button {
 	min-height: 48px;
 }
 
-app-folders .bottom-navigation button.active,
 app-notes .bottom-navigation button.active {
 	color: var(--nc-primary);
 	font-weight: 650;
 }
 
-app-folders .bottom-navigation ion-icon,
 app-notes .bottom-navigation ion-icon {
 	font-size: 21px;
 }
@@ -325,37 +358,6 @@ app-note-editor .view-mode pre {
 	margin-top: var(--nc-space-6);
 }
 
-.color-picker {
-	border: 0;
-	display: flex;
-	gap: var(--nc-space-3);
-	margin: var(--nc-space-5) 0 0;
-	padding: 0;
-}
-
-.color-picker legend {
-	color: var(--nc-text);
-	font-size: var(--nc-font-size-small);
-	font-weight: 600;
-	margin-bottom: var(--nc-space-3);
-}
-
-.color-picker button {
-	align-items: center;
-	border: 2px solid transparent;
-	border-radius: 50%;
-	color: #fff;
-	display: flex;
-	height: 32px;
-	justify-content: center;
-	padding: 0;
-	width: 32px;
-}
-
-.color-picker button.selected {
-	box-shadow: 0 0 0 3px var(--nc-surface), 0 0 0 5px var(--nc-primary);
-}
-
 .hidden-submit {
 	height: 1px;
 	opacity: 0;
@@ -365,18 +367,24 @@ app-note-editor .view-mode pre {
 }
 
 @media (min-width: 768px) {
+	app-folders .folders-container {
+		padding-top: var(--nc-space-6);
+	}
+
+	app-folders .folder-list {
+		max-width: 720px;
+	}
+
+	app-folders .mobile-action-bar {
+		left: 50%;
+		max-width: 720px;
+		transform: translateX(-50%);
+	}
+
 	.folder-modal {
 		--height: 100%;
 		--width: 100%;
 	}
-}
-
-:root.nc-theme-dark {
-	.folder-color-0 { background: #172957; color: #8ca8ff; }
-	.folder-color-1 { background: #123a35; color: #61d4bb; }
-	.folder-color-2 { background: #44202a; color: #ff8797; }
-	.folder-color-3 { background: #46371b; color: #ffc967; }
-	.folder-color-4 { background: #302550; color: #b99aff; }
 }
 
 @media (hover: hover) {

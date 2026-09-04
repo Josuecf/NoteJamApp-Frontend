@@ -1,6 +1,5 @@
-import { Component, ViewChild } from '@angular/core';
-import { IonSearchbar } from '@ionic/angular';
-import { AlertController } from '@ionic/angular';
+import { Component, ElementRef, ViewChild } from '@angular/core';
+import { ActionSheetController, AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 
 import { AuthService } from '../../../../core/auth/auth.service';
@@ -15,28 +14,102 @@ import { NoteService } from '../../../notes/services/note.service';
   standalone: false,
 })
 export class FoldersPage {
-  readonly folderColors = ['#3164F4', '#54C7B0', '#F0647A', '#F5B544', '#9165E8', '#AEB7C8'];
-  @ViewChild('folderSearch') folderSearch?: IonSearchbar;
+  private readonly defaultFolderColor = '#3164F4';
+  @ViewChild('folderSearch') folderSearch?: ElementRef<HTMLInputElement>;
   readonly folders$ = this.folderService.folders$;
   readonly noteCounts$ = this.noteService.countsByFolder$;
   folderName = '';
-  folderColor = this.folderColors[0];
+  folderColor = this.defaultFolderColor;
   folderDescription = '';
   searchTerm = '';
   isFolderFormOpen = false;
   editingFolder: Folder | null = null;
   errorMessage = '';
+  private longPressTimer?: ReturnType<typeof setTimeout>;
+  private longPressTriggered = false;
+  private longPressOrigin?: { x: number; y: number };
 
   constructor(
     private readonly authService: AuthService,
     private readonly folderService: FolderService,
     private readonly noteService: NoteService,
     private readonly router: Router,
-    private readonly alertController: AlertController
+    private readonly alertController: AlertController,
+    private readonly actionSheetController: ActionSheetController
   ) {}
 
   openFolder(folderId: string) {
     return this.router.navigate(['/notes', folderId]);
+  }
+
+  handleFolderClick(folderId: string) {
+    if (this.longPressTriggered) {
+      this.longPressTriggered = false;
+      return;
+    }
+
+    return this.openFolder(folderId);
+  }
+
+  startLongPress(event: PointerEvent, folder: Folder) {
+    if (event.button !== 0) {
+      return;
+    }
+
+    this.cancelLongPress();
+    this.longPressTriggered = false;
+    this.longPressOrigin = { x: event.clientX, y: event.clientY };
+    this.longPressTimer = setTimeout(() => {
+      this.longPressTriggered = true;
+      this.longPressTimer = undefined;
+      void this.openFolderOptions(folder);
+      window.setTimeout(() => this.longPressTriggered = false, 1000);
+    }, 550);
+  }
+
+  trackLongPress(event: PointerEvent) {
+    if (!this.longPressOrigin) {
+      return;
+    }
+
+    const distance = Math.hypot(
+      event.clientX - this.longPressOrigin.x,
+      event.clientY - this.longPressOrigin.y
+    );
+
+    if (distance > 10) {
+      this.cancelLongPress();
+    }
+  }
+
+  cancelLongPress() {
+    if (this.longPressTimer) {
+      clearTimeout(this.longPressTimer);
+      this.longPressTimer = undefined;
+    }
+    this.longPressOrigin = undefined;
+  }
+
+  async openFolderOptions(folder: Folder) {
+    this.cancelLongPress();
+    const sheet = await this.actionSheetController.create({
+      header: folder.name,
+      buttons: [
+        {
+          text: 'Editar',
+          icon: 'pencil-outline',
+          handler: () => this.openEditFolder(folder)
+        },
+        {
+          text: 'Eliminar',
+          icon: 'trash-outline',
+          role: 'destructive',
+          handler: () => void this.deleteFolder(folder.id, folder.name)
+        },
+        { text: 'Cancelar', role: 'cancel' }
+      ]
+    });
+    await sheet.present();
   }
 
   openSettings() {
@@ -44,7 +117,7 @@ export class FoldersPage {
   }
 
   async focusSearch() {
-    await this.folderSearch?.setFocus();
+    this.folderSearch?.nativeElement.focus();
   }
 
   filterFolders(folders: Folder[]) {
@@ -60,7 +133,7 @@ export class FoldersPage {
   openCreateFolder() {
     this.editingFolder = null;
     this.folderName = '';
-    this.folderColor = this.folderColors[0];
+    this.folderColor = this.defaultFolderColor;
     this.folderDescription = '';
     this.isFolderFormOpen = true;
     this.errorMessage = '';
@@ -69,7 +142,7 @@ export class FoldersPage {
   openEditFolder(folder: Folder) {
     this.editingFolder = folder;
     this.folderName = folder.name;
-    this.folderColor = folder.color || this.folderColors[0];
+    this.folderColor = folder.color || this.defaultFolderColor;
     this.folderDescription = folder.description || '';
     this.isFolderFormOpen = true;
     this.errorMessage = '';
@@ -79,7 +152,7 @@ export class FoldersPage {
     this.isFolderFormOpen = false;
     this.editingFolder = null;
     this.folderName = '';
-    this.folderColor = this.folderColors[0];
+    this.folderColor = this.defaultFolderColor;
     this.folderDescription = '';
     this.errorMessage = '';
   }
