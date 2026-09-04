@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { browserLocalPersistence, onAuthStateChanged, setPersistence, signInWithEmailAndPassword, signOut, User } from 'firebase/auth';
+import { Capacitor } from '@capacitor/core';
 import { Observable, shareReplay } from 'rxjs';
 
 import { firebaseAuth } from '../firebase/firebase';
@@ -31,12 +32,27 @@ export class AuthService {
       return Promise.reject(new Error('Firebase no esta configurado'));
     }
 
-    return setPersistence(auth, browserLocalPersistence)
+    return this.setPersistenceWithFallback(auth)
       .then(() => signInWithEmailAndPassword(auth, email, password));
   }
 
   logout() {
     return this.auth ? signOut(this.auth) : Promise.resolve();
+  }
+
+  private async setPersistenceWithFallback(auth: NonNullable<typeof this.auth>) {
+    if (Capacitor.isNativePlatform()) {
+      return;
+    }
+
+    try {
+      await Promise.race([
+        setPersistence(auth, browserLocalPersistence),
+        new Promise<never>((_, reject) => {
+          window.setTimeout(() => reject(new Error('PERSISTENCE_TIMEOUT')), 3000);
+        })
+      ]);
+    } catch { }
   }
 
 }

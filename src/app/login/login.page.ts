@@ -25,10 +25,17 @@ export class LoginPage {
     this.isSubmitting = true;
 
     try {
-      await this.authService.login(this.email, this.password);
+      await Promise.race([
+        this.authService.login(this.email, this.password),
+        new Promise<never>((_, reject) => {
+          window.setTimeout(() => reject(new Error('LOGIN_TIMEOUT')), 15000);
+        })
+      ]);
       await this.router.navigateByUrl('/home');
-    } catch {
-      this.errorMessage = 'No se pudo iniciar sesión. Revisa tus datos.';
+    } catch (error) {
+      this.errorMessage = error instanceof Error && error.message === 'LOGIN_TIMEOUT'
+        ? 'La conexión con Firebase tardó demasiado. Comprueba la conexión a Internet.'
+        : 'No se pudo iniciar sesión. Revisa tus datos y la configuración de Firebase.';
     } finally {
       this.isSubmitting = false;
     }

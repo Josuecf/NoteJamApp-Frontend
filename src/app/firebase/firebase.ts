@@ -1,5 +1,6 @@
+import { Capacitor } from '@capacitor/core';
 import { initializeApp } from 'firebase/app';
-import { getAuth, Auth } from 'firebase/auth';
+import { Auth, getAuth, inMemoryPersistence, initializeAuth } from 'firebase/auth';
 import {
   Firestore,
   initializeFirestore,
@@ -13,7 +14,11 @@ const firebaseApp = environment.firebase.apiKey && environment.firebase.projectI
   ? initializeApp(environment.firebase)
   : null;
 
-export const firebaseAuth: Auth | null = firebaseApp ? getAuth(firebaseApp) : null;
+export const firebaseAuth: Auth | null = firebaseApp
+  ? Capacitor.isNativePlatform()
+    ? initializeAuth(firebaseApp, { persistence: inMemoryPersistence })
+    : getAuth(firebaseApp)
+  : null;
 
 export const firebaseFirestore: Firestore | null = firebaseApp
   ? initializeFirestore(firebaseApp, {
