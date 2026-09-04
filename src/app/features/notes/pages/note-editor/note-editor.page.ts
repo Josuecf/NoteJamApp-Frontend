@@ -34,7 +34,7 @@ export class NoteEditorPage implements OnDestroy {
   isOptionsOpen = false;
   updatedAtLabel = '';
   sections: NoteSection[] = [];
-  private readonly noteSubscription: Subscription;
+  private readonly noteSubscription?: Subscription;
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -46,6 +46,13 @@ export class NoteEditorPage implements OnDestroy {
     this.folderId = this.route.snapshot.paramMap.get('folderId') ?? '';
     this.noteId = this.route.snapshot.paramMap.get('noteId') ?? '';
     this.folder$ = this.folderService.watch(this.folderId);
+
+    if (this.noteId === 'new') {
+      this.isLoading = false;
+      this.isDirty = true;
+      return;
+    }
+
     this.noteSubscription = this.noteService.watch(this.noteId).subscribe({
       next: (note) => {
         if (note && !this.isDirty) {
@@ -82,6 +89,18 @@ export class NoteEditorPage implements OnDestroy {
 
   openOptions() {
     this.isOptionsOpen = true;
+  }
+
+  shareNote() {
+    const share = navigator.share;
+
+    if (share) {
+      void share.call(navigator, { title: this.title || 'Nota', text: this.content });
+    }
+  }
+
+  createAnotherNote() {
+    void this.router.navigate(['/notes', this.folderId, 'new']);
   }
 
   closeOptions() {
@@ -127,6 +146,13 @@ export class NoteEditorPage implements OnDestroy {
     this.isSaving = true;
 
     try {
+      if (this.noteId === 'new') {
+        const note = await this.noteService.create(this.folderId, this.title, this.content);
+        this.isDirty = false;
+        await this.router.navigate(['/notes', this.folderId, note.id], { replaceUrl: true });
+        return;
+      }
+
       await this.noteService.update(this.noteId, this.title, this.content);
       this.isDirty = false;
       this.statusMessage = 'Guardado';
@@ -216,6 +242,6 @@ export class NoteEditorPage implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.noteSubscription.unsubscribe();
+    this.noteSubscription?.unsubscribe();
   }
 }

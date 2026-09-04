@@ -1,32 +1,36 @@
-<app-collapsible-header #pageHeader [title]="title || 'Nota'" [viewMode]="isViewMode">
-    <ion-buttons header-start slot="start">
+<app-top-navbar [title]="title || 'Nueva nota'" [showTitle]="false" [floatingControls]="true">
+    <ion-buttons nav-start slot="start">
       <ion-button (click)="backToNotes()" aria-label="Volver a notas">
         <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-buttons header-end slot="end">
-      <ion-button *ngIf="!isViewMode" [disabled]="isSaving || isLoading" (click)="save()">
-        {{ isSaving ? 'Guardando…' : 'Guardar' }}
+    <ion-buttons nav-end slot="end">
+      <ion-button class="header-icon-button" *ngIf="!isViewMode" [disabled]="isSaving || isLoading" (click)="save()" aria-label="Guardar nota">
+        <ion-icon slot="icon-only" name="checkmark-outline"></ion-icon>
+      </ion-button>
+      <ion-button class="header-icon-button" (click)="shareNote()" aria-label="Compartir nota">
+        <ion-icon slot="icon-only" name="share-outline"></ion-icon>
       </ion-button>
       <ion-button id="note-options-trigger" (click)="openOptions()" aria-label="Más opciones">
         <ion-icon slot="icon-only" name="ellipsis-horizontal"></ion-icon>
       </ion-button>
     </ion-buttons>
-</app-collapsible-header>
+</app-top-navbar>
 
-<ion-content [fullscreen]="true" [class.header-collapsed]="pageHeader.isScrolled" [scrollEvents]="true" (ionScroll)="pageHeader.handleScroll($event)" [class.view-mode]="isViewMode">
-  <main class="editor-container" *ngIf="!isLoading; else loadingState">
+<ion-content [fullscreen]="true" [class.view-mode]="isViewMode">
+  <main class="editor-container" [class.is-new-note]="noteId === 'new'" *ngIf="!isLoading; else loadingState">
     <header class="note-heading">
-      <h1 *ngIf="isViewMode">{{ title }}</h1>
-      <ion-input
-        *ngIf="!isViewMode"
-        [(ngModel)]="title"
-        (ngModelChange)="markDirty()"
-        name="title"
-        class="note-title"
-        placeholder="Título"
-        aria-label="Título de la nota"
-      ></ion-input>
+        <h1 *ngIf="isViewMode">{{ title || 'Nueva nota' }}</h1>
+        <ion-input
+          *ngIf="!isViewMode"
+          [(ngModel)]="title"
+          (ngModelChange)="markDirty()"
+          name="title"
+          class="note-title"
+          placeholder="Título"
+          maxlength="80"
+          aria-label="Título de la nota"
+        ></ion-input>
       <p><span>{{ (folder$ | async)?.name || 'Carpeta' }}</span><span aria-hidden="true">·</span><span>{{ updatedAtLabel }}</span></p>
     </header>
 
@@ -45,14 +49,14 @@
     </div>
 
     <section class="edit-area" *ngIf="!isViewMode">
-      <label for="note-content">Contenido</label>
       <ion-textarea
         id="note-content"
         [(ngModel)]="content"
         (ngModelChange)="onContentChange()"
         name="content"
         class="note-content"
-        placeholder="Escribe aquí tus acordes..."
+        placeholder="Escribe aquí la descripción..."
+        maxlength="5000"
         aria-label="Contenido de la nota"
         auto-grow="true"
       ></ion-textarea>
@@ -93,6 +97,10 @@
     </div>
   </ng-template>
 </ion-content>
+
+<button class="editor-new-note-button" type="button" (click)="createAnotherNote()" aria-label="Nueva nota">
+  <ion-icon name="create-outline" aria-hidden="true"></ion-icon>
+</button>
 
 <ion-popover [isOpen]="isOptionsOpen" trigger="note-options-trigger" (didDismiss)="closeOptions()">
   <ng-template>

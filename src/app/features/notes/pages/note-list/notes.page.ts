@@ -26,11 +26,7 @@ export class NotesPage {
   readonly notes$ = this.noteService.forFolder(this.folderId);
   readonly folder$ = this.folderService.watch(this.folderId);
   searchTerm = '';
-  newNoteTitle = '';
-  newNoteContent = '';
   isHeaderCollapsed = false;
-  isCreateFormVisible = false;
-  isSaving = false;
   isDeleting = false;
   pendingDelete: { id: string; title: string } | null = null;
   errorMessage = '';
@@ -113,36 +109,8 @@ export class NotesPage {
     this.pageTitle?.handleGestureCancel();
   }
 
-  async createNote() {
-    if (this.isSaving || !this.newNoteTitle.trim()) {
-      return;
-    }
-
-    this.errorMessage = '';
-    this.isSaving = true;
-
-    try {
-      await this.noteService.create(this.folderId, this.newNoteTitle, this.newNoteContent);
-      this.newNoteTitle = '';
-      this.newNoteContent = '';
-      this.isCreateFormVisible = false;
-    } catch {
-      this.errorMessage = 'Escribe un título válido para la nota.';
-    } finally {
-      this.isSaving = false;
-    }
-  }
-
   toggleCreateForm() {
-    this.isCreateFormVisible = !this.isCreateFormVisible;
-    this.errorMessage = '';
-  }
-
-  closeCreateForm() {
-    this.isCreateFormVisible = false;
-    this.newNoteTitle = '';
-    this.newNoteContent = '';
-    this.errorMessage = '';
+    void this.router.navigate(['/notes', this.folderId, 'new']);
   }
 
   focusSearch() {

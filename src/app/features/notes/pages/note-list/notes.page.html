@@ -34,7 +34,7 @@
           <p class="note-count">{{ noteCountLabel(notes.length) }}</p>
         </app-animated-page-title>
 
-        <ion-text color="danger" role="alert" *ngIf="errorMessage && !isCreateFormVisible">
+        <ion-text color="danger" role="alert" *ngIf="errorMessage">
           <p class="error-message">{{ errorMessage }}</p>
         </ion-text>
 
@@ -87,53 +87,6 @@
     </app-floating-search-action>
   </ion-content>
 </ng-container>
-
-<ion-modal class="note-create-modal" [animated]="false" [isOpen]="isCreateFormVisible" (didDismiss)="closeCreateForm()">
-  <ng-template>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Nueva nota</ion-title>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content [scrollY]="false">
-      <form class="note-create-form" (ngSubmit)="createNote()">
-        <div class="note-form-icon" aria-hidden="true">
-          <ion-icon name="document-text-outline"></ion-icon>
-        </div>
-        <label class="modal-field">
-          <span>Título</span>
-          <input [(ngModel)]="newNoteTitle" name="newNoteTitle" placeholder="Ej. A Ti la Gloria" maxlength="80" autofocus />
-        </label>
-        <div class="folder-field">
-          <span>Carpeta</span>
-          <div>
-            <ion-icon name="folder-outline"></ion-icon>
-            <strong>{{ (folder$ | async)?.name || 'Carpeta actual' }}</strong>
-          </div>
-        </div>
-        <label class="modal-field modal-field-textarea">
-          <span>Contenido</span>
-          <textarea [(ngModel)]="newNoteContent" name="newNoteContent" placeholder="Escribe tus acordes aquí..." maxlength="5000" rows="8"></textarea>
-        </label>
-        <ion-text color="danger" role="alert" *ngIf="errorMessage"><p class="error-message">{{ errorMessage }}</p></ion-text>
-        <button class="hidden-submit" type="submit" [disabled]="isSaving || !newNoteTitle.trim()">Guardar</button>
-      </form>
-    </ion-content>
-    <ion-footer class="modal-actions">
-      <ion-toolbar>
-        <div class="modal-action-buttons">
-          <button type="button" (click)="closeCreateForm()">Cancelar</button>
-          <button type="button" class="save-button" [disabled]="isSaving || !newNoteTitle.trim()" (click)="createNote()">
-            <ion-spinner *ngIf="isSaving" name="crescent" aria-hidden="true"></ion-spinner>
-            <span>{{ isSaving ? 'Guardando…' : 'Guardar' }}</span>
-          </button>
-        </div>
-      </ion-toolbar>
-    </ion-footer>
-  </ng-template>
-</ion-modal>
-
-<app-full-screen-loader [visible]="isSaving" message="Guardando…"></app-full-screen-loader>
 
 <app-confirm-modal
   [isOpen]="pendingDelete !== null"
