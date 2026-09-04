@@ -36,20 +36,20 @@
 }
 
 .brand-mark {
-  align-items: center;
-  background: var(--ion-color-primary);
+  background: #0b1224;
   border-radius: 16px;
   box-shadow: 0 10px 22px rgba(var(--ion-color-primary-rgb), 0.22);
-  color: var(--ion-color-primary-contrast);
-  display: flex;
   height: 52px;
-  justify-content: center;
   margin: 32px 32px 0;
+  overflow: hidden;
   width: 52px;
 }
 
-.brand-mark ion-icon {
-  font-size: 28px;
+.brand-mark img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
 }
 
 .eyebrow {
