@@ -1,0 +1,46 @@
+<ion-content>
+  <main class="login-container">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>NoteJam</ion-card-title>
+        <ion-card-subtitle>Inicia sesión para continuar</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <form (ngSubmit)="login()">
+          <ion-item>
+            <ion-input
+              [(ngModel)]="email"
+              name="email"
+              type="email"
+              label="Correo electrónico"
+              labelPlacement="stacked"
+              autocomplete="email"
+              required
+            ></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-input
+              [(ngModel)]="password"
+              name="password"
+              type="password"
+              label="Contraseña"
+              labelPlacement="stacked"
+              autocomplete="current-password"
+              required
+            ></ion-input>
+          </ion-item>
+
+          <ion-text color="danger" *ngIf="errorMessage">
+            <p class="error-message">{{ errorMessage }}</p>
+          </ion-text>
+
+          <ion-button expand="block" type="submit" [disabled]="isSubmitting || !email || !password">
+            {{ isSubmitting ? 'Iniciando sesión...' : 'Iniciar sesión' }}
+          </ion-button>
+        </form>
+      </ion-card-content>
+    </ion-card>
+  </main>
+</ion-content>

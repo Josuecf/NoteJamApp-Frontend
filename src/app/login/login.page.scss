@@ -1,0 +1,22 @@
+.login-container {
+  display: grid;
+  min-height: 100%;
+  place-items: center;
+  padding: 24px;
+}
+
+ion-card {
+  width: min(100%, 420px);
+}
+
+ion-item + ion-item {
+  margin-top: 12px;
+}
+
+ion-button {
+  margin-top: 24px;
+}
+
+.error-message {
+  margin: 16px 0 0;
+}
