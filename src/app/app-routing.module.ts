@@ -1,31 +1,31 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
-import { authGuard } from './auth/auth.guard';
+import { authGuard } from './core/auth/auth.guard';
 
 const routes: Routes = [
   {
     path: '',
-    loadChildren: () => import('./splash/splash.module').then((m) => m.SplashPageModule),
+    loadChildren: () => import('./features/access/splash/splash.module').then((m) => m.SplashPageModule),
     pathMatch: 'full'
   },
   {
     path: 'login',
-    loadChildren: () => import('./login/login.module').then((m) => m.LoginPageModule)
+    loadChildren: () => import('./features/access/login/login.module').then((m) => m.LoginPageModule)
   },
   {
     path: 'home',
-    loadChildren: () => import('./home/home.module').then((m) => m.HomePageModule),
+    loadChildren: () => import('./features/folders/pages/folders/folders.module').then((m) => m.FoldersPageModule),
     canActivate: [authGuard]
   },
   {
     path: 'notes/:folderId',
-    loadChildren: () => import('./notes/notes.module').then((m) => m.NotesPageModule),
+    loadChildren: () => import('./features/notes/notes.module').then((m) => m.NotesPageModule),
     canActivate: [authGuard]
   },
   {
     path: 'settings',
-    loadChildren: () => import('./settings/settings.module').then((m) => m.SettingsPageModule),
+    loadChildren: () => import('./features/settings/pages/settings/settings.module').then((m) => m.SettingsPageModule),
     canActivate: [authGuard]
   },
 ];

@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 
-import { AuthService } from '../auth/auth.service';
-import { AppearanceMode, ThemeService } from '../theme/theme.service';
+import { AuthService } from '../../../../core/auth/auth.service';
+import { AppearanceMode, ThemeService } from '../../../../core/theme/theme.service';
 
 @Component({
   selector: 'app-settings',

@@ -4,9 +4,9 @@ import { Keyboard } from '@capacitor/keyboard';
 import { Observable, Subscription } from 'rxjs';
 import { AlertController } from '@ionic/angular';
 
-import { Folder } from '../folders/folder.model';
-import { FolderService } from '../folders/folder.service';
-import { NoteService } from './note.service';
+import { Folder } from '../../../folders/models/folder.model';
+import { FolderService } from '../../../folders/services/folder.service';
+import { NoteService } from '../../services/note.service';
 
 interface NoteSection {
   title: string;

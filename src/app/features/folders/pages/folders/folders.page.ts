@@ -3,18 +3,18 @@ import { IonSearchbar } from '@ionic/angular';
 import { AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 
-import { AuthService } from '../auth/auth.service';
-import { FolderService } from '../folders/folder.service';
-import { Folder } from '../folders/folder.model';
-import { NoteService } from '../notes/note.service';
+import { AuthService } from '../../../../core/auth/auth.service';
+import { Folder } from '../../models/folder.model';
+import { FolderService } from '../../services/folder.service';
+import { NoteService } from '../../../notes/services/note.service';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: 'home.page.html',
-  styleUrls: ['home.page.scss'],
+  selector: 'app-folders',
+  templateUrl: 'folders.page.html',
+  styleUrls: ['folders.page.scss'],
   standalone: false,
 })
-export class HomePage {
+export class FoldersPage {
   readonly folderColors = ['#3164F4', '#54C7B0', '#F0647A', '#F5B544', '#9165E8', '#AEB7C8'];
   @ViewChild('folderSearch') folderSearch?: IonSearchbar;
   readonly folders$ = this.folderService.folders$;

@@ -89,13 +89,13 @@ ion-button {
 	text-transform: none;
 }
 
-app-home ion-footer,
+app-folders ion-footer,
 app-notes ion-footer {
 	background: var(--nc-surface);
 	border-top: 1px solid var(--nc-border);
 }
 
-app-home .bottom-navigation,
+app-folders .bottom-navigation,
 app-notes .bottom-navigation {
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
@@ -104,7 +104,7 @@ app-notes .bottom-navigation {
 	padding: var(--nc-space-2) var(--nc-space-4) calc(var(--nc-space-2) + env(safe-area-inset-bottom));
 }
 
-app-home .bottom-navigation button,
+app-folders .bottom-navigation button,
 app-notes .bottom-navigation button {
 	align-items: center;
 	background: transparent;
@@ -117,13 +117,13 @@ app-notes .bottom-navigation button {
 	min-height: 48px;
 }
 
-app-home .bottom-navigation button.active,
+app-folders .bottom-navigation button.active,
 app-notes .bottom-navigation button.active {
 	color: var(--nc-primary);
 	font-weight: 650;
 }
 
-app-home .bottom-navigation ion-icon,
+app-folders .bottom-navigation ion-icon,
 app-notes .bottom-navigation ion-icon {
 	font-size: 21px;
 }

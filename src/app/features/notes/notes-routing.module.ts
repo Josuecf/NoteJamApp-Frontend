@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { NotesPage } from './notes.page';
-import { NoteEditorPage } from './note-editor.page';
+import { NotesPage } from './pages/note-list/notes.page';
+import { NoteEditorPage } from './pages/note-editor/note-editor.page';
 
 const routes: Routes = [
   {

@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular/lazy';
 
-import { HomePage } from './home.page';
+import { FoldersPage } from './folders.page';
 
-describe('HomePage', () => {
-  let component: HomePage;
-  let fixture: ComponentFixture<HomePage>;
+describe('FoldersPage', () => {
+  let component: FoldersPage;
+  let fixture: ComponentFixture<FoldersPage>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [HomePage],
+      declarations: [FoldersPage],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(HomePage);
+    fixture = TestBed.createComponent(FoldersPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

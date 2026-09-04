@@ -4,8 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
 import { NotesPageRoutingModule } from './notes-routing.module';
-import { NotesPage } from './notes.page';
-import { NoteEditorPage } from './note-editor.page';
+import { NotesPage } from './pages/note-list/notes.page';
+import { NoteEditorPage } from './pages/note-editor/note-editor.page';
 
 @NgModule({
   imports: [CommonModule, FormsModule, IonicModule, NotesPageRoutingModule],

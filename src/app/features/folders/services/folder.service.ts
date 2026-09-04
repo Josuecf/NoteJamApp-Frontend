@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { addDoc, collection, deleteDoc, doc, onSnapshot, query, serverTimestamp, updateDoc, where } from 'firebase/firestore';
 import { Observable, of, switchMap } from 'rxjs';
 
-import { AuthService } from '../auth/auth.service';
-import { firebaseFirestore } from '../firebase/firebase';
-import { Folder } from './folder.model';
+import { AuthService } from '../../../core/auth/auth.service';
+import { firebaseFirestore } from '../../../core/firebase/firebase';
+import { Folder } from '../models/folder.model';
 
 @Injectable({ providedIn: 'root' })
 export class FolderService {

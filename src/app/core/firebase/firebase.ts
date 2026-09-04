@@ -8,7 +8,7 @@ import {
   persistentMultipleTabManager
 } from 'firebase/firestore';
 
-import { environment } from '../../environments/environment';
+import { environment } from '../../../environments/environment';
 
 const firebaseApp = environment.firebase.apiKey && environment.firebase.projectId
   ? initializeApp(environment.firebase)

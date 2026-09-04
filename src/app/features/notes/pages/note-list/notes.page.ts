@@ -2,9 +2,9 @@ import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActionSheetController, AlertController, IonSearchbar } from '@ionic/angular';
 
-import { NoteService } from './note.service';
-import { Note } from './note.model';
-import { FolderService } from '../folders/folder.service';
+import { FolderService } from '../../../folders/services/folder.service';
+import { Note } from '../../models/note.model';
+import { NoteService } from '../../services/note.service';
 
 @Component({
   selector: 'app-notes',
