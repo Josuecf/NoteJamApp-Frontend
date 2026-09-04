@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 
 import { AuthService } from '../auth/auth.service';
 import { FolderService } from '../folders/folder.service';
+import { Folder } from '../folders/folder.model';
 
 @Component({
   selector: 'app-home',
@@ -13,6 +14,8 @@ import { FolderService } from '../folders/folder.service';
 export class HomePage {
   readonly folders$ = this.folderService.folders$;
   newFolderName = '';
+  searchTerm = '';
+  isCreateFormVisible = false;
   errorMessage = '';
 
   constructor(
@@ -25,12 +28,32 @@ export class HomePage {
     return this.router.navigate(['/notes', folderId]);
   }
 
+  openSettings() {
+    return this.router.navigateByUrl('/settings');
+  }
+
+  filterFolders(folders: Folder[]) {
+    const search = this.searchTerm.trim().toLocaleLowerCase();
+
+    if (!search) {
+      return folders;
+    }
+
+    return folders.filter((folder) => folder.name.toLocaleLowerCase().includes(search));
+  }
+
+  toggleCreateForm() {
+    this.isCreateFormVisible = !this.isCreateFormVisible;
+    this.errorMessage = '';
+  }
+
   async createFolder() {
     this.errorMessage = '';
 
     try {
       await this.folderService.create(this.newFolderName);
       this.newFolderName = '';
+      this.isCreateFormVisible = false;
     } catch {
       this.errorMessage = 'Escribe un nombre válido para la carpeta.';
     }

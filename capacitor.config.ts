@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.notejam.app',
-  appName: 'NoteJam',
+  appId: 'com.notechord.app',
+  appName: 'NoteChord',
   webDir: 'www'
 };
 

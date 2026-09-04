@@ -1,0 +1,80 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="backToFolders()" aria-label="Volver a carpetas">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Ajustes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <main class="settings-container">
+    <ng-container *ngIf="user$ | async as user">
+      <section class="profile-section">
+        <div class="profile-avatar">{{ (user.email || 'J').charAt(0).toUpperCase() }}</div>
+        <div>
+          <h1>{{ user.displayName || 'Mi cuenta' }}</h1>
+          <p>{{ user.email }}</p>
+        </div>
+      </section>
+    </ng-container>
+
+    <section class="settings-group">
+      <p class="group-label">Estado</p>
+      <ion-item>
+        <ion-icon slot="start" name="cloud-done-outline"></ion-icon>
+        <ion-label>
+          <h2>Sincronización</h2>
+          <p>Tus cambios se sincronizan automáticamente</p>
+        </ion-label>
+        <span class="online-status">Activa</span>
+      </ion-item>
+    </section>
+
+    <section class="settings-group">
+      <p class="group-label">Aplicación</p>
+      <ion-item>
+        <ion-icon slot="start" name="information-circle-outline"></ion-icon>
+        <ion-label>
+          <h2>Acerca de NoteChord</h2>
+          <p>Notas musicales y cifrados</p>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-icon slot="start" name="help-circle-outline"></ion-icon>
+        <ion-label>
+          <h2>Ayuda</h2>
+          <p>Información de uso y soporte</p>
+        </ion-label>
+      </ion-item>
+    </section>
+
+    <ion-button class="logout-button" expand="block" fill="outline" color="danger" (click)="logout()">
+      <ion-icon slot="start" name="log-out-outline"></ion-icon>
+      Cerrar sesión
+    </ion-button>
+  </main>
+</ion-content>
+
+<ion-footer>
+  <nav class="bottom-navigation" aria-label="Navegación principal">
+    <button type="button" (click)="backToFolders()">
+      <ion-icon name="folder-open-outline"></ion-icon>
+      <span>Carpetas</span>
+    </button>
+    <button type="button" (click)="backToFolders()">
+      <ion-icon name="search-outline"></ion-icon>
+      <span>Buscar</span>
+    </button>
+    <button type="button" (click)="backToFolders()">
+      <ion-icon name="add-circle-outline"></ion-icon>
+      <span>Nueva</span>
+    </button>
+    <button class="active" type="button" aria-current="page">
+      <ion-icon name="settings-outline"></ion-icon>
+      <span>Ajustes</span>
+    </button>
+  </nav>
+</ion-footer>

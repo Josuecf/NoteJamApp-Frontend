@@ -1,6 +1,9 @@
 {
-  "name": "app",
-  "short_name": "app",
+  "name": "NoteChord",
+  "short_name": "NoteChord",
+  "description": "Notas musicales y cifrados",
+  "theme_color": "#3157d5",
+  "background_color": "#f5f7fb",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",

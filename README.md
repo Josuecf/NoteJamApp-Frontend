@@ -1,4 +1,4 @@
-# NoteJam
+# NoteChord
 
 Aplicacion multiplataforma sencilla para guardar notas musicales y cifrados.
 
@@ -37,4 +37,9 @@ La aplicacion usa persistencia local para conservar la sesion y protege la ruta 
 
 ## Capacitor
 
-La configuracion base esta en `capacitor.config.ts`. Las plataformas nativas se añadiran en la fase correspondiente.
+La configuracion base esta en `capacitor.config.ts`. Las plataformas Android e iOS estan preparadas en `android/` e `ios/`.
+
+```bash
+npx cap open android
+npx cap open ios
+```

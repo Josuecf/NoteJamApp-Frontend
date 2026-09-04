@@ -36,6 +36,21 @@ export class FolderService {
 
   constructor(private readonly authService: AuthService) {}
 
+  watch(folderId: string): Observable<Folder | null> {
+    if (!this.firestore || !folderId) {
+      return of(null);
+    }
+
+    return new Observable<Folder | null>((subscriber) => onSnapshot(
+      doc(this.firestore!, 'folders', folderId),
+      (snapshot) => subscriber.next(snapshot.exists() ? {
+        id: snapshot.id,
+        ...snapshot.data()
+      } as Folder : null),
+      (error) => subscriber.error(error)
+    ));
+  }
+
   create(name: string) {
     const user = this.authService.currentUser;
     const normalizedName = name.trim();

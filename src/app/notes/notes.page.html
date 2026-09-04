@@ -1,31 +1,47 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button (click)="backToFolders()">Carpetas</ion-button>
+      <ion-button (click)="backToFolders()" aria-label="Volver a carpetas">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
     </ion-buttons>
-    <ion-title>Notas</ion-title>
+    <ion-title>{{ (folder$ | async)?.name || 'Notas' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button aria-label="Más opciones">
+        <ion-icon slot="icon-only" name="ellipsis-horizontal"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <main class="notes-container">
-    <form class="new-note-form" (ngSubmit)="createNote()">
-      <ion-input
-        [(ngModel)]="newNoteTitle"
-        name="newNoteTitle"
-        label="Nueva nota"
-        labelPlacement="stacked"
-        placeholder="Ej. A Ti la Gloria"
-      ></ion-input>
-      <ion-button type="submit" [disabled]="!newNoteTitle.trim()">Crear</ion-button>
-    </form>
+    <p class="page-intro">Tus notas y cifrados</p>
 
     <ion-searchbar
       [(ngModel)]="searchTerm"
       name="searchTerm"
-      placeholder="Buscar por título"
+      placeholder="Buscar notas..."
       show-clear-button="focus"
     ></ion-searchbar>
+
+    <form class="new-note-form" [class.is-visible]="isCreateFormVisible" (ngSubmit)="createNote()">
+      <div class="form-heading">
+        <div class="form-icon"><ion-icon name="document-text-outline"></ion-icon></div>
+        <div>
+          <h2>Nueva nota</h2>
+          <p>Guarda un nuevo cifrado en esta carpeta.</p>
+        </div>
+      </div>
+      <ion-input
+        [(ngModel)]="newNoteTitle"
+        name="newNoteTitle"
+        label="Título de la nota"
+        labelPlacement="stacked"
+        placeholder="Ej. A Ti la Gloria"
+      ></ion-input>
+      <ion-button expand="block" type="submit" [disabled]="!newNoteTitle.trim()">Guardar nota</ion-button>
+    </form>
 
     <ion-text color="danger" role="alert" *ngIf="errorMessage">
       <p class="error-message">{{ errorMessage }}</p>
@@ -35,9 +51,16 @@
       <ng-container *ngIf="filterNotes(notes) as filteredNotes">
         <ion-list *ngIf="filteredNotes.length; else emptyState">
           <ion-item *ngFor="let note of filteredNotes" button (click)="openNote(note.id)">
-            <ion-label>{{ note.title }}</ion-label>
-            <ion-button color="danger" fill="clear" slot="end" (click)="$event.stopPropagation(); deleteNote(note.id, note.title)">
-              Eliminar
+            <div class="note-icon" slot="start">
+              <ion-icon name="document-text-outline"></ion-icon>
+            </div>
+            <ion-label>
+              <h2>{{ note.title }}</h2>
+              <p>{{ note.content || 'Sin contenido todavía' }}</p>
+              <small>Nota musical</small>
+            </ion-label>
+            <ion-button color="danger" fill="clear" slot="end" (click)="$event.stopPropagation(); deleteNote(note.id, note.title)" aria-label="Eliminar nota">
+              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
             </ion-button>
           </ion-item>
         </ion-list>
@@ -50,5 +73,32 @@
         <p>Crea una nota o cambia la búsqueda.</p>
       </section>
     </ng-template>
+
+    <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+      <ion-fab-button (click)="toggleCreateForm()" aria-label="Nueva nota">
+        <ion-icon [name]="isCreateFormVisible ? 'close-outline' : 'add-outline'"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
   </main>
 </ion-content>
+
+<ion-footer>
+  <nav class="bottom-navigation" aria-label="Navegación principal">
+    <button type="button" (click)="backToFolders()">
+      <ion-icon name="folder-open-outline"></ion-icon>
+      <span>Carpetas</span>
+    </button>
+    <button class="active" type="button" aria-current="page" (click)="searchTerm = ''">
+      <ion-icon name="search-outline"></ion-icon>
+      <span>Buscar</span>
+    </button>
+    <button type="button" (click)="toggleCreateForm()">
+      <ion-icon name="add-circle-outline"></ion-icon>
+      <span>Nueva</span>
+    </button>
+    <button type="button" (click)="openSettings()">
+      <ion-icon name="settings-outline"></ion-icon>
+      <span>Ajustes</span>
+    </button>
+  </nav>
+</ion-footer>

@@ -1,20 +1,95 @@
 .login-container {
-  display: grid;
+  align-items: center;
+  display: flex;
+  justify-content: center;
   min-height: 100%;
   place-items: center;
-  padding: 24px;
+  padding: 32px 20px;
+  position: relative;
 }
 
-ion-card {
-  width: min(100%, 420px);
+.login-container::before {
+  background: var(--ion-color-primary);
+  border-radius: 50%;
+  content: '';
+  height: 280px;
+  opacity: 0.08;
+  position: absolute;
+  right: -120px;
+  top: -100px;
+  width: 280px;
+}
+
+.login-panel {
+  background: var(--ion-card-background);
+  border: 1px solid var(--ion-border-color);
+  border-radius: 24px;
+  box-shadow: var(--notechord-shadow);
+  max-width: 440px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.brand-copy {
+  padding: 32px 32px 20px;
+}
+
+.brand-mark {
+  align-items: center;
+  background: var(--ion-color-primary);
+  border-radius: 16px;
+  box-shadow: 0 10px 22px rgba(var(--ion-color-primary-rgb), 0.22);
+  color: var(--ion-color-primary-contrast);
+  display: flex;
+  height: 52px;
+  justify-content: center;
+  margin: 32px 32px 0;
+  width: 52px;
+}
+
+.brand-mark ion-icon {
+  font-size: 28px;
+}
+
+.eyebrow {
+  color: var(--ion-color-medium);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+}
+
+h1 {
+  color: var(--ion-text-color);
+  font-size: 32px;
+  letter-spacing: 0;
+  margin: 0;
+}
+
+.brand-copy > p:last-child {
+  color: var(--ion-color-medium);
+  margin: 8px 0 0;
+}
+
+.login-form-wrapper {
+  padding: 12px 32px 32px;
+}
+
+ion-item {
+  --background: transparent;
+  --border-color: var(--ion-border-color);
+  --padding-start: 0;
+  --inner-padding-end: 0;
 }
 
 ion-item + ion-item {
-  margin-top: 12px;
+  margin-top: 14px;
 }
 
 ion-button {
-  margin-top: 24px;
+  margin-top: 28px;
 }
 
 .error-message {
@@ -23,6 +98,20 @@ ion-button {
 
 @media (max-width: 600px) {
   .login-container {
-    padding: 16px;
+    padding: 20px 16px;
+  }
+
+  .brand-copy,
+  .login-form-wrapper {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .brand-mark {
+    margin-left: 24px;
+  }
+
+  h1 {
+    font-size: 28px;
   }
 }

@@ -1,12 +1,17 @@
 <ion-content>
   <main class="login-container">
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>NoteJam</ion-card-title>
-        <ion-card-subtitle>Inicia sesión para continuar</ion-card-subtitle>
-      </ion-card-header>
+    <section class="login-panel">
+      <div class="brand-mark" aria-hidden="true">
+        <ion-icon name="musical-notes-outline"></ion-icon>
+      </div>
 
-      <ion-card-content>
+      <div class="brand-copy">
+        <p class="eyebrow">Tu música siempre contigo</p>
+        <h1>NoteChord</h1>
+        <p>Inicia sesión para continuar</p>
+      </div>
+
+      <div class="login-form-wrapper">
         <form (ngSubmit)="login()">
           <ion-item>
             <ion-input
@@ -40,7 +45,7 @@
             {{ isSubmitting ? 'Iniciando sesión...' : 'Iniciar sesión' }}
           </ion-button>
         </form>
-      </ion-card-content>
-    </ion-card>
+      </div>
+    </section>
   </main>
 </ion-content>

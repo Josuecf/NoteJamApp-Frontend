@@ -1,11 +1,14 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button (click)="backToNotes()">Notas</ion-button>
+      <ion-button (click)="backToNotes()" aria-label="Volver a notas">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
     </ion-buttons>
-    <ion-title>Editar nota</ion-title>
+    <ion-title>Editor de nota</ion-title>
     <ion-buttons slot="end">
       <ion-button [disabled]="isSaving || isLoading" (click)="save()">
+        <ion-icon slot="start" name="save-outline"></ion-icon>
         {{ isSaving ? 'Guardando...' : 'Guardar' }}
       </ion-button>
     </ion-buttons>
@@ -14,6 +17,13 @@
 
 <ion-content>
   <main class="editor-container" *ngIf="!isLoading; else loadingState">
+    <div class="note-context">
+      <span class="context-icon"><ion-icon name="document-text-outline"></ion-icon></span>
+      <span>Nota musical</span>
+      <span class="context-dot">•</span>
+      <span>Guardado manual</span>
+    </div>
+
     <ion-input
       [(ngModel)]="title"
       (ngModelChange)="markDirty()"
@@ -34,8 +44,11 @@
     ></ion-textarea>
 
     <section class="sections-preview" *ngIf="sections.length">
-      <h2>Vista plegable</h2>
-      <details *ngFor="let section of sections">
+      <div class="section-heading">
+        <h2>Secciones</h2>
+        <span>{{ sections.length }}</span>
+      </div>
+      <details *ngFor="let section of sections; let index = index" [open]="index === 0">
         <summary>{{ section.title }}</summary>
         <pre>{{ section.content }}</pre>
       </details>
