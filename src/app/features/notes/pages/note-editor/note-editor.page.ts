@@ -138,6 +138,11 @@ export class NoteEditorPage implements OnDestroy {
   }
 
   backToNotes() {
+    if (window.history.length > 1) {
+      window.history.back();
+      return;
+    }
+
     return this.router.navigate(['/notes', this.folderId]);
   }
 

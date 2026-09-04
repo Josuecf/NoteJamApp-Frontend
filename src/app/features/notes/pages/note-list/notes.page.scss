@@ -1,109 +1,78 @@
-.add-button {
-  --background: var(--nc-primary);
-  --border-radius: var(--nc-radius-round);
-  --color: #fff;
-  height: 38px;
-  width: 38px;
+ion-content {
+  --background: var(--nc-background-secondary);
 }
 
 .notes-container {
+  box-sizing: border-box;
   margin: 0 auto;
   max-width: var(--nc-content-wide);
-  padding: var(--nc-space-2) var(--nc-page-gutter) var(--nc-space-8);
+  padding: var(--nc-space-4) var(--nc-page-gutter) calc(76px + env(safe-area-inset-bottom));
 }
 
-.page-heading {
-  margin-bottom: var(--nc-space-5);
-}
-
-.page-heading h1 {
-  font-size: clamp(1.75rem, 1.55rem + 0.7vw, 2.125rem);
-  letter-spacing: -0.035em;
-  line-height: var(--nc-line-height-tight);
-  margin: 0;
-}
-
-.page-heading p {
+.note-count {
   color: var(--nc-text-secondary);
-  font-size: var(--nc-font-size-caption);
+  font-size: 0.8125rem;
   margin: var(--nc-space-1) 0 0;
 }
 
-ion-searchbar {
-  --background: var(--nc-surface-raised);
-  --border-radius: var(--nc-radius-md);
-  --box-shadow: var(--nc-shadow-sm);
-  --color: var(--nc-text);
-  --icon-color: var(--nc-text-secondary);
-  --placeholder-color: var(--nc-text-secondary);
-  border: 1px solid var(--nc-border);
-  border-radius: var(--nc-radius-md);
-  margin-bottom: var(--nc-space-3);
-  padding: 0;
+.note-groups {
+  display: grid;
+  gap: var(--nc-space-8);
 }
 
-.note-list {
-  background: transparent;
-  padding: 0;
+ion-item-sliding {
+  background: var(--nc-surface-raised);
 }
 
 ion-item {
-  --background: transparent;
-  --border-color: var(--nc-border);
-  --inner-padding-end: 0;
-  --min-height: 76px;
-  --padding-start: 0;
+  --background: var(--nc-surface-raised);
+  --border-color: color-mix(in srgb, var(--nc-border) 72%, transparent);
+  --border-width: 0 0 1px 0;
+  --inner-padding-end: var(--nc-space-3);
+  --min-height: 60px;
+  --padding-start: var(--nc-space-5);
 }
 
-ion-item:last-child {
+ion-item-sliding:last-child ion-item {
   --border-width: 0;
 }
 
-.note-icon {
-  align-items: center;
-  background: var(--nc-primary-soft);
-  border-radius: var(--nc-radius-sm);
-  color: var(--nc-primary);
-  display: flex;
-  flex: 0 0 40px;
-  height: 40px;
-  justify-content: center;
-  margin-right: var(--nc-space-3);
-  width: 40px;
-}
-
-.note-icon ion-icon {
-  font-size: 22px;
+ion-label {
+  margin-block: 8px;
+  min-width: 0;
 }
 
 ion-label h2 {
   color: var(--nc-text);
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   font-weight: 650;
   margin: 0;
-}
-
-ion-label p {
-  color: var(--nc-text-secondary);
-  font-size: var(--nc-font-size-caption);
-  margin: 3px 0;
-  max-width: 62ch;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-ion-label small {
+ion-label p {
   color: var(--nc-text-secondary);
-  display: block;
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
+  display: flex;
+  gap: var(--nc-space-3);
+  margin: 3px 0 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-ion-item > ion-button {
-  --color: var(--nc-text-secondary);
-  height: 44px;
-  margin: 0;
-  width: 42px;
+ion-label p span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.create-note-icon {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
 }
 
 .error-message {
@@ -112,44 +81,52 @@ ion-item > ion-button {
 }
 
 .empty-state {
-  margin: var(--nc-space-8) auto;
-  max-width: 360px;
-  padding: var(--nc-space-8) var(--nc-space-6);
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 3rem auto 0;
+  min-height: 220px;
+  padding: 0 var(--nc-space-6);
   text-align: center;
 }
 
 .empty-icon {
   align-items: center;
-  background: var(--nc-primary-soft);
-  border-radius: var(--nc-radius-lg);
-  color: var(--nc-primary);
+  background: transparent;
+  border-radius: 0;
+  color: var(--nc-text);
   display: flex;
-  height: 64px;
+  height: auto;
   justify-content: center;
   margin: 0 auto var(--nc-space-4);
-  width: 64px;
+  width: auto;
 }
 
 .empty-icon ion-icon {
-  font-size: 32px;
+  color: var(--nc-text-secondary);
+  font-size: 36px;
+  opacity: 0.9;
 }
 
 .empty-state h2 {
-  font-size: var(--nc-font-size-section);
-  margin: 0 0 var(--nc-space-2);
+  color: var(--nc-text);
+  font-size: clamp(1.5rem, 2.4vw, 1.9rem);
+  font-weight: 700;
+  line-height: 1.1;
+  margin: 0;
 }
 
-.empty-state p {
+.empty-description {
   color: var(--nc-text-secondary);
-  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin: var(--nc-space-3) 0 0;
+  max-width: 320px;
 }
 
 @media (min-width: 768px) {
   .notes-container {
     padding-top: var(--nc-space-6);
-  }
-
-  .note-list {
-    max-width: 760px;
   }
 }

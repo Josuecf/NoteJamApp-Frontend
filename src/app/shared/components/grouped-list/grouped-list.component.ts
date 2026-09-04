@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-grouped-list',
@@ -6,4 +6,6 @@ import { Component } from '@angular/core';
   styleUrls: ['./grouped-list.component.scss'],
   standalone: false
 })
-export class GroupedListComponent {}
+export class GroupedListComponent {
+  @Input() heading = '';
+}

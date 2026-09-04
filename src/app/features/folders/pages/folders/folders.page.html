@@ -1,4 +1,4 @@
-<app-top-navbar title="Carpetas" [showTitle]="isHeaderCollapsed">
+<app-top-navbar title="Carpetas" [showTitle]="isHeaderCollapsed" [floatingControls]="true">
     <ion-buttons nav-end slot="end">
       <ion-button (click)="openSettings()" aria-label="Abrir ajustes">
         <ion-icon slot="icon-only" name="settings-outline"></ion-icon>
@@ -81,46 +81,54 @@
   </app-floating-search-action>
 </ion-content>
 
-<ion-modal class="folder-modal" [isOpen]="isFolderFormOpen" (didDismiss)="closeFolderForm()">
+<ion-modal class="folder-modal" [animated]="false" [isOpen]="isFolderFormOpen" (didDismiss)="closeFolderForm()">
   <ng-template>
     <ion-header>
       <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-button (click)="closeFolderForm()">Cancelar</ion-button>
-        </ion-buttons>
         <ion-title>{{ editingFolder ? 'Editar carpeta' : 'Nueva carpeta' }}</ion-title>
-        <ion-buttons slot="end">
-          <ion-button class="save-button" strong="true" [disabled]="!folderName.trim()" (click)="saveFolder()">Guardar</ion-button>
-        </ion-buttons>
       </ion-toolbar>
     </ion-header>
-    <ion-content>
+    <ion-content [scrollY]="false">
       <form class="folder-form" (ngSubmit)="saveFolder()">
         <div class="folder-form-icon" aria-hidden="true">
           <ion-icon name="folder-outline"></ion-icon>
         </div>
-        <ion-input
-          [(ngModel)]="folderName"
-          name="folderName"
-          label="Nombre"
-          labelPlacement="stacked"
-          placeholder="Ej. Alabanza"
-          enterkeyhint="done"
-          autofocus="true"
-        ></ion-input>
-        <ion-textarea
-          [(ngModel)]="folderDescription"
-          name="folderDescription"
-          label="Descripción (opcional)"
-          labelPlacement="stacked"
-          placeholder="Describe esta carpeta..."
-          rows="4"
-        ></ion-textarea>
+        <label class="modal-field">
+          <span>Nombre</span>
+          <input [(ngModel)]="folderName" name="folderName" placeholder="Ej. Alabanza" maxlength="40" enterkeyhint="done" autofocus />
+        </label>
+        <label class="modal-field modal-field-textarea">
+          <span>Descripción (opcional)</span>
+          <textarea [(ngModel)]="folderDescription" name="folderDescription" placeholder="Describe esta carpeta..." maxlength="240" rows="4"></textarea>
+        </label>
         <ion-text color="danger" role="alert" *ngIf="errorMessage">
           <p class="error-message">{{ errorMessage }}</p>
         </ion-text>
-        <button class="hidden-submit" type="submit" [disabled]="!folderName.trim()">Guardar</button>
+        <button class="hidden-submit" type="submit" [disabled]="isSaving || !folderName.trim()">Guardar</button>
       </form>
     </ion-content>
+    <ion-footer class="modal-actions">
+      <ion-toolbar>
+        <div class="modal-action-buttons">
+          <button type="button" (click)="closeFolderForm()">Cancelar</button>
+          <button type="button" class="save-button" [disabled]="isSaving || !folderName.trim()" (click)="saveFolder()">
+            <ion-spinner *ngIf="isSaving" name="crescent" aria-hidden="true"></ion-spinner>
+            <span>{{ isSaving ? 'Guardando…' : 'Guardar' }}</span>
+          </button>
+        </div>
+      </ion-toolbar>
+    </ion-footer>
   </ng-template>
 </ion-modal>
+
+<app-full-screen-loader [visible]="isSaving" message="Guardando…"></app-full-screen-loader>
+
+<app-confirm-modal
+  [isOpen]="pendingDelete !== null"
+  [title]="'Eliminar carpeta'"
+  [message]="'¿Quieres eliminar ' + (pendingDelete?.name || '') + '?'"
+  confirmText="Eliminar"
+  [isBusy]="isDeleting"
+  (cancelled)="cancelFolderDelete()"
+  (confirmed)="confirmFolderDelete()"
+></app-confirm-modal>

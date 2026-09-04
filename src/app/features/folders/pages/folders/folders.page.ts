@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { ActionSheetController, AlertController } from '@ionic/angular';
+import { ActionSheetController } from '@ionic/angular';
 import { Router } from '@angular/router';
 
 import { AuthService } from '../../../../core/auth/auth.service';
@@ -25,6 +25,9 @@ export class FoldersPage {
   searchTerm = '';
   isHeaderCollapsed = false;
   isFolderFormOpen = false;
+  isSaving = false;
+  isDeleting = false;
+  pendingDelete: { id: string; name: string } | null = null;
   editingFolder: Folder | null = null;
   errorMessage = '';
   private longPressTimer?: ReturnType<typeof setTimeout>;
@@ -36,7 +39,6 @@ export class FoldersPage {
     private readonly folderService: FolderService,
     private readonly noteService: NoteService,
     private readonly router: Router,
-    private readonly alertController: AlertController,
     private readonly actionSheetController: ActionSheetController
   ) {}
 
@@ -160,7 +162,12 @@ export class FoldersPage {
   }
 
   async saveFolder() {
+    if (this.isSaving || !this.folderName.trim()) {
+      return;
+    }
+
     this.errorMessage = '';
+    this.isSaving = true;
 
     try {
       if (this.editingFolder) {
@@ -171,23 +178,26 @@ export class FoldersPage {
       this.closeFolderForm();
     } catch {
       this.errorMessage = 'Escribe un nombre válido para la carpeta.';
+    } finally {
+      this.isSaving = false;
     }
   }
 
-  async deleteFolder(folderId: string, name: string) {
-    const alert = await this.alertController.create({
-      header: 'Eliminar carpeta',
-      message: `¿Quieres eliminar “${name}”?`,
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Eliminar',
-          role: 'destructive',
-          handler: () => void this.performFolderDelete(folderId)
-        }
-      ]
-    });
-    await alert.present();
+  deleteFolder(folderId: string, name: string) {
+    this.pendingDelete = { id: folderId, name };
+  }
+
+  cancelFolderDelete() {
+    this.pendingDelete = null;
+  }
+
+  confirmFolderDelete() {
+    const folder = this.pendingDelete;
+
+    if (folder) {
+      this.isDeleting = true;
+      void this.performFolderDelete(folder.id);
+    }
   }
 
   private async performFolderDelete(folderId: string) {
@@ -195,6 +205,9 @@ export class FoldersPage {
       await this.folderService.delete(folderId);
     } catch {
       this.errorMessage = 'No se pudo eliminar la carpeta.';
+    } finally {
+      this.isDeleting = false;
+      this.pendingDelete = null;
     }
   }
 

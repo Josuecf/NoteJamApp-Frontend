@@ -8,5 +8,7 @@ import { Component, Input } from '@angular/core';
 })
 export class TopNavbarComponent {
   @Input() title = '';
+  @Input() subtitle = '';
   @Input() showTitle = false;
+  @Input() floatingControls = false;
 }

@@ -1,132 +1,146 @@
-<app-collapsible-header #pageHeader [title]="(folder$ | async)?.name || 'Notas'">
-    <ion-buttons header-start slot="start">
+<ng-container *ngIf="folder$ | async as folder">
+  <app-top-navbar
+    [title]="folder?.name || 'Notas'"
+    [subtitle]="noteCountLabel((notes$ | async)?.length ?? 0)"
+    [showTitle]="isHeaderCollapsed"
+    [floatingControls]="true"
+  >
+    <ion-buttons nav-start slot="start">
       <ion-button (click)="backToFolders()" aria-label="Volver a carpetas">
         <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-buttons header-end slot="end">
-      <ion-button aria-label="Más opciones">
-        <ion-icon slot="icon-only" name="ellipsis-horizontal"></ion-icon>
-      </ion-button>
-      <ion-button class="add-button" (click)="toggleCreateForm()" aria-label="Nueva nota">
-        <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+    <ion-buttons nav-end slot="end">
+      <ion-button (click)="openSettings()" aria-label="Ajustes">
+        <ion-icon slot="icon-only" name="settings-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-</app-collapsible-header>
+  </app-top-navbar>
 
-<ion-content [class.header-collapsed]="pageHeader.isScrolled" [scrollEvents]="true" (ionScroll)="pageHeader.handleScroll($event)">
-  <main class="notes-container">
-    <ng-container *ngIf="notes$ | async as notes">
-      <header class="page-heading">
-        <h1>{{ (folder$ | async)?.name || 'Notas' }}</h1>
-        <p>{{ notes.length }} {{ notes.length === 1 ? 'nota' : 'notas' }}</p>
-      </header>
+  <ion-content
+    [scrollEvents]="true"
+    (ionScroll)="handleScroll($event)"
+    (touchstart)="handleGestureStart($event)"
+    (touchmove)="handleGestureMove($event)"
+    (touchend)="handleGestureEnd($event)"
+    (touchcancel)="handleGestureCancel()"
+  >
+    <main class="notes-container">
+      <ng-container *ngIf="notes$ | async as notes">
+        <app-animated-page-title
+          [title]="folder?.name || 'Notas'"
+          (collapsedChange)="isHeaderCollapsed = $event"
+        >
+          <p class="note-count">{{ noteCountLabel(notes.length) }}</p>
+        </app-animated-page-title>
 
-      <ion-searchbar
-        #notesSearch
-        [(ngModel)]="searchTerm"
-        name="searchTerm"
-        placeholder="Buscar notas..."
-        show-clear-button="focus"
-      ></ion-searchbar>
+        <ion-text color="danger" role="alert" *ngIf="errorMessage && !isCreateFormVisible">
+          <p class="error-message">{{ errorMessage }}</p>
+        </ion-text>
 
-      <ion-text color="danger" role="alert" *ngIf="errorMessage && !isCreateFormVisible">
-        <p class="error-message">{{ errorMessage }}</p>
-      </ion-text>
+        <ng-container *ngIf="groupedNotes(notes) as groups">
+          <section class="note-groups" *ngIf="groups.length; else emptyState">
+            <app-grouped-list
+              class="note-list"
+              *ngFor="let group of groups"
+              [heading]="group.label"
+            >
+              <ion-item-sliding *ngFor="let note of group.notes">
+                <ion-item button detail="false" (click)="openNote(note.id)">
+                  <ion-label>
+                    <h2>{{ note.title }}</h2>
+                    <p>
+                      <span>{{ formatUpdatedAt(note) }}</span>
+                      <span>{{ notePreview(note.content) }}</span>
+                    </p>
+                  </ion-label>
+                </ion-item>
+                <app-swipe-actions
+                  (edit)="openNote(note.id)"
+                  (remove)="deleteNote(note.id, note.title)"
+                ></app-swipe-actions>
+              </ion-item-sliding>
+            </app-grouped-list>
+          </section>
+        </ng-container>
 
-      <ng-container *ngIf="filterNotes(notes) as filteredNotes">
-        <ion-list class="note-list" *ngIf="filteredNotes.length; else emptyState">
-          <ion-item *ngFor="let note of filteredNotes" button detail="false" (click)="openNote(note.id)">
-            <div class="note-icon" slot="start">
-              <ion-icon name="document-text-outline"></ion-icon>
-            </div>
-            <ion-label>
-              <h2>{{ note.title }}</h2>
-              <p>{{ notePreview(note.content) }}</p>
-              <small>{{ formatUpdatedAt(note) }}</small>
-            </ion-label>
-            <ion-button fill="clear" slot="end" (click)="$event.stopPropagation(); openNoteOptions(note)" [attr.aria-label]="'Opciones de ' + note.title">
-              <ion-icon slot="icon-only" name="ellipsis-horizontal"></ion-icon>
-            </ion-button>
-          </ion-item>
-        </ion-list>
+        <ng-template #emptyState>
+          <section class="empty-state">
+            <div class="empty-icon"><ion-icon name="document-text-outline"></ion-icon></div>
+            <h2>{{ searchTerm ? 'Sin resultados' : 'Sin notas' }}</h2>
+            <p class="empty-description">
+              {{ searchTerm ? 'Prueba con otra palabra clave o limpia la búsqueda.' : 'Crea tu primera nota para guardar ideas, recordatorios y apuntes.' }}
+            </p>
+          </section>
+        </ng-template>
       </ng-container>
+    </main>
 
-      <ng-template #emptyState>
-        <section class="empty-state">
-          <div class="empty-icon"><ion-icon name="document-text-outline"></ion-icon></div>
-          <h2>{{ searchTerm ? 'Sin resultados' : 'No hay notas' }}</h2>
-          <p>{{ searchTerm ? 'Prueba con otro título.' : 'Crea tu primera nota en esta carpeta.' }}</p>
-          <ion-button *ngIf="!searchTerm" fill="clear" (click)="toggleCreateForm()">Nueva nota</ion-button>
-        </section>
-      </ng-template>
-    </ng-container>
-  </main>
-</ion-content>
+    <app-floating-search-action
+      slot="fixed"
+      [(value)]="searchTerm"
+      searchLabel="Buscar notas"
+      actionLabel="Nueva nota"
+      (action)="toggleCreateForm()"
+    >
+      <ion-icon action-icon class="create-note-icon" name="create-outline" aria-hidden="true"></ion-icon>
+    </app-floating-search-action>
+  </ion-content>
+</ng-container>
 
-<ion-footer>
-  <nav class="bottom-navigation" aria-label="Navegación principal">
-    <button type="button" (click)="backToFolders()">
-      <ion-icon name="folder-outline"></ion-icon>
-      <span>Carpetas</span>
-    </button>
-    <button class="active" type="button" (click)="focusSearch()">
-      <ion-icon name="search-outline"></ion-icon>
-      <span>Buscar</span>
-    </button>
-    <button type="button" (click)="openSettings()">
-      <ion-icon name="settings-outline"></ion-icon>
-      <span>Ajustes</span>
-    </button>
-  </nav>
-</ion-footer>
-
-<ion-modal class="note-create-modal" [isOpen]="isCreateFormVisible" (didDismiss)="closeCreateForm()">
+<ion-modal class="note-create-modal" [animated]="false" [isOpen]="isCreateFormVisible" (didDismiss)="closeCreateForm()">
   <ng-template>
     <ion-header>
       <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-button (click)="closeCreateForm()">Cancelar</ion-button>
-        </ion-buttons>
         <ion-title>Nueva nota</ion-title>
-        <ion-buttons slot="end">
-          <ion-button class="save-button" strong="true" [disabled]="!newNoteTitle.trim()" (click)="createNote()">Guardar</ion-button>
-        </ion-buttons>
       </ion-toolbar>
     </ion-header>
-    <ion-content>
+    <ion-content [scrollY]="false">
       <form class="note-create-form" (ngSubmit)="createNote()">
         <div class="note-form-icon" aria-hidden="true">
           <ion-icon name="document-text-outline"></ion-icon>
         </div>
-        <ion-input
-          [(ngModel)]="newNoteTitle"
-          name="newNoteTitle"
-          label="Título"
-          labelPlacement="stacked"
-          placeholder="Ej. A Ti la Gloria"
-          autofocus="true"
-        ></ion-input>
+        <label class="modal-field">
+          <span>Título</span>
+          <input [(ngModel)]="newNoteTitle" name="newNoteTitle" placeholder="Ej. A Ti la Gloria" maxlength="80" autofocus />
+        </label>
         <div class="folder-field">
           <span>Carpeta</span>
           <div>
-            <ion-icon name="folder"></ion-icon>
+            <ion-icon name="folder-outline"></ion-icon>
             <strong>{{ (folder$ | async)?.name || 'Carpeta actual' }}</strong>
           </div>
         </div>
-        <ion-textarea
-          [(ngModel)]="newNoteContent"
-          name="newNoteContent"
-          label="Contenido"
-          labelPlacement="stacked"
-          placeholder="Escribe tus acordes aquí..."
-          rows="8"
-        ></ion-textarea>
-        <ion-text color="danger" role="alert" *ngIf="errorMessage">
-          <p class="error-message">{{ errorMessage }}</p>
-        </ion-text>
-        <button class="hidden-submit" type="submit" [disabled]="!newNoteTitle.trim()">Guardar</button>
+        <label class="modal-field modal-field-textarea">
+          <span>Contenido</span>
+          <textarea [(ngModel)]="newNoteContent" name="newNoteContent" placeholder="Escribe tus acordes aquí..." maxlength="5000" rows="8"></textarea>
+        </label>
+        <ion-text color="danger" role="alert" *ngIf="errorMessage"><p class="error-message">{{ errorMessage }}</p></ion-text>
+        <button class="hidden-submit" type="submit" [disabled]="isSaving || !newNoteTitle.trim()">Guardar</button>
       </form>
     </ion-content>
+    <ion-footer class="modal-actions">
+      <ion-toolbar>
+        <div class="modal-action-buttons">
+          <button type="button" (click)="closeCreateForm()">Cancelar</button>
+          <button type="button" class="save-button" [disabled]="isSaving || !newNoteTitle.trim()" (click)="createNote()">
+            <ion-spinner *ngIf="isSaving" name="crescent" aria-hidden="true"></ion-spinner>
+            <span>{{ isSaving ? 'Guardando…' : 'Guardar' }}</span>
+          </button>
+        </div>
+      </ion-toolbar>
+    </ion-footer>
   </ng-template>
 </ion-modal>
+
+<app-full-screen-loader [visible]="isSaving" message="Guardando…"></app-full-screen-loader>
+
+<app-confirm-modal
+  [isOpen]="pendingDelete !== null"
+  [title]="'Eliminar nota'"
+  [message]="'¿Quieres eliminar ' + (pendingDelete?.title || '') + '?'"
+  confirmText="Eliminar"
+  [isBusy]="isDeleting"
+  (cancelled)="cancelNoteDelete()"
+  (confirmed)="confirmNoteDelete()"
+></app-confirm-modal>

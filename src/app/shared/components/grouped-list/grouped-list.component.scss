@@ -2,6 +2,15 @@
   display: block;
 }
 
+h2 {
+  color: var(--nc-text);
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: var(--nc-line-height-tight);
+  margin: 0 0 var(--nc-space-3);
+}
+
 ion-list {
   background: var(--nc-surface-raised);
   border: 0;

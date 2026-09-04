@@ -83,6 +83,12 @@
   width: 44px;
 }
 
+.action-button ::ng-deep [action-icon] {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+}
+
 @media (min-width: 768px) {
   .floating-actions {
     left: 50%;

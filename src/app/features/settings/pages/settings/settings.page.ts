@@ -30,6 +30,11 @@ export class SettingsPage {
   }
 
   backToFolders() {
+    if (window.history.length > 1) {
+      window.history.back();
+      return;
+    }
+
     return this.router.navigateByUrl('/home');
   }
 
