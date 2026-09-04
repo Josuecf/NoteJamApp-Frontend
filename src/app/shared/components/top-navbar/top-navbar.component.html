@@ -1,0 +1,7 @@
+<ion-header>
+  <ion-toolbar>
+    <ng-content select="[nav-start]"></ng-content>
+    <ion-title [class.visible]="showTitle">{{ title }}</ion-title>
+    <ng-content select="[nav-end]"></ng-content>
+  </ion-toolbar>
+</ion-header>

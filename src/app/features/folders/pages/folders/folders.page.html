@@ -1,24 +1,25 @@
-<app-collapsible-header #pageHeader title="Carpetas">
-    <ion-buttons header-end slot="end">
+<app-top-navbar title="Carpetas" [showTitle]="isHeaderCollapsed">
+    <ion-buttons nav-end slot="end">
       <ion-button (click)="openSettings()" aria-label="Abrir ajustes">
         <ion-icon slot="icon-only" name="settings-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-</app-collapsible-header>
+</app-top-navbar>
 
 <ion-content
-  [class.header-collapsed]="pageHeader.isScrolled"
   [scrollEvents]="true"
-  (ionScroll)="pageHeader.handleScroll($event)"
-  (touchstart)="pageHeader.handleGestureStart($event)"
-  (touchmove)="pageHeader.handleGestureMove($event)"
-  (touchend)="pageHeader.handleGestureEnd($event)"
-  (touchcancel)="pageHeader.handleGestureCancel()"
+  (ionScroll)="pageTitle.handleScroll($event)"
+  (touchstart)="pageTitle.handleGestureStart($event)"
+  (touchmove)="pageTitle.handleGestureMove($event)"
+  (touchend)="pageTitle.handleGestureEnd($event)"
+  (touchcancel)="pageTitle.handleGestureCancel()"
 >
   <main class="folders-container">
-    <header class="page-heading">
-      <h1>Carpetas</h1>
-    </header>
+    <app-animated-page-title
+      #pageTitle
+      title="Carpetas"
+      (collapsedChange)="isHeaderCollapsed = $event"
+    ></app-animated-page-title>
 
     <ion-text color="danger" role="alert" *ngIf="errorMessage">
       <p class="error-message">{{ errorMessage }}</p>
@@ -26,7 +27,7 @@
 
     <ng-container *ngIf="folders$ | async as folders">
       <ng-container *ngIf="filterFolders(folders) as filteredFolders">
-        <ion-list class="folder-list" *ngIf="filteredFolders.length; else emptyState">
+        <app-grouped-list class="folder-list" *ngIf="filteredFolders.length; else emptyState">
           <ion-item-sliding *ngFor="let folder of filteredFolders">
             <ion-item
               button
@@ -48,16 +49,12 @@
               <span class="folder-count" *ngIf="noteCounts$ | async as counts">{{ counts[folder.id] || 0 }}</span>
               <ion-icon class="row-chevron" name="chevron-forward-outline" slot="end" aria-hidden="true"></ion-icon>
             </ion-item>
-            <ion-item-options side="end">
-              <ion-item-option color="primary" (click)="openEditFolder(folder)">
-                <ion-icon slot="icon-only" name="pencil-outline"></ion-icon>
-              </ion-item-option>
-              <ion-item-option color="danger" (click)="deleteFolder(folder.id, folder.name)">
-                <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-              </ion-item-option>
-            </ion-item-options>
+            <app-swipe-actions
+              (edit)="openEditFolder(folder)"
+              (remove)="deleteFolder(folder.id, folder.name)"
+            ></app-swipe-actions>
           </ion-item-sliding>
-        </ion-list>
+        </app-grouped-list>
       </ng-container>
     </ng-container>
 
@@ -70,26 +67,18 @@
 
   </main>
 
-  <div class="mobile-action-bar" slot="fixed" role="search">
-    <div class="search-field">
-      <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
-      <input
-        #folderSearch
-        [(ngModel)]="searchTerm"
-        name="searchTerm"
-        type="search"
-        placeholder="Buscar"
-        autocomplete="off"
-        aria-label="Buscar carpetas"
-      >
-    </div>
-    <button class="compose-button" type="button" (click)="openCreateFolder()" aria-label="Nueva carpeta">
-      <span class="folder-add-icon" aria-hidden="true">
-        <ion-icon class="folder-shape" name="folder-outline"></ion-icon>
-        <ion-icon class="plus-shape" name="add-outline"></ion-icon>
-      </span>
-    </button>
-  </div>
+  <app-floating-search-action
+    slot="fixed"
+    [(value)]="searchTerm"
+    searchLabel="Buscar carpetas"
+    actionLabel="Nueva carpeta"
+    (action)="openCreateFolder()"
+  >
+    <span action-icon class="folder-add-icon" aria-hidden="true">
+      <ion-icon class="folder-shape" name="folder-outline"></ion-icon>
+      <ion-icon class="plus-shape" name="add-outline"></ion-icon>
+    </span>
+  </app-floating-search-action>
 </ion-content>
 
 <ion-modal class="folder-modal" [isOpen]="isFolderFormOpen" (didDismiss)="closeFolderForm()">

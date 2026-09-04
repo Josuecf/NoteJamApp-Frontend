@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ActionSheetController, AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 
@@ -6,6 +6,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
 import { Folder } from '../../models/folder.model';
 import { FolderService } from '../../services/folder.service';
 import { NoteService } from '../../../notes/services/note.service';
+import { FloatingSearchActionComponent } from '../../../../shared/components/floating-search-action/floating-search-action.component';
 
 @Component({
   selector: 'app-folders',
@@ -15,13 +16,14 @@ import { NoteService } from '../../../notes/services/note.service';
 })
 export class FoldersPage {
   private readonly defaultFolderColor = '#3164F4';
-  @ViewChild('folderSearch') folderSearch?: ElementRef<HTMLInputElement>;
+  @ViewChild(FloatingSearchActionComponent) folderSearch?: FloatingSearchActionComponent;
   readonly folders$ = this.folderService.folders$;
   readonly noteCounts$ = this.noteService.countsByFolder$;
   folderName = '';
   folderColor = this.defaultFolderColor;
   folderDescription = '';
   searchTerm = '';
+  isHeaderCollapsed = false;
   isFolderFormOpen = false;
   editingFolder: Folder | null = null;
   errorMessage = '';
@@ -117,7 +119,7 @@ export class FoldersPage {
   }
 
   async focusSearch() {
-    this.folderSearch?.nativeElement.focus();
+    this.folderSearch?.focus();
   }
 
   filterFolders(folders: Folder[]) {

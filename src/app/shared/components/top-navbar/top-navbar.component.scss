@@ -1,0 +1,41 @@
+:host {
+  display: contents;
+}
+
+ion-header,
+ion-toolbar {
+  border: 0;
+  box-shadow: none !important;
+}
+
+ion-header::after {
+  background: none !important;
+  height: 0;
+}
+
+ion-toolbar {
+  --background: var(--nc-background-secondary);
+  --border-color: transparent;
+  --border-style: none;
+  --border-width: 0;
+  padding-inline: var(--nc-page-gutter);
+}
+
+ion-title {
+  color: var(--nc-text);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  left: 50%;
+  opacity: 0;
+  padding: 0;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, calc(-50% + 5px));
+  transition: opacity var(--nc-transition-fast), transform var(--nc-transition-fast);
+  width: max-content;
+}
+
+ion-title.visible {
+  opacity: 1;
+  transform: translate(-50%, -50%);
+}
