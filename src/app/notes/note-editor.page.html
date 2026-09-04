@@ -1,0 +1,60 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="backToNotes()">Notas</ion-button>
+    </ion-buttons>
+    <ion-title>Editar nota</ion-title>
+    <ion-buttons slot="end">
+      <ion-button [disabled]="isSaving || isLoading" (click)="save()">
+        {{ isSaving ? 'Guardando...' : 'Guardar' }}
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <main class="editor-container" *ngIf="!isLoading; else loadingState">
+    <ion-input
+      [(ngModel)]="title"
+      (ngModelChange)="markDirty()"
+      name="title"
+      class="note-title"
+      placeholder="Título"
+      aria-label="Título de la nota"
+    ></ion-input>
+
+    <ion-textarea
+      [(ngModel)]="content"
+      (ngModelChange)="onContentChange()"
+      name="content"
+      class="note-content"
+      placeholder="Escribe aquí tus acordes..."
+      aria-label="Contenido de la nota"
+      auto-grow="true"
+    ></ion-textarea>
+
+    <section class="sections-preview" *ngIf="sections.length">
+      <h2>Vista plegable</h2>
+      <details *ngFor="let section of sections">
+        <summary>{{ section.title }}</summary>
+        <pre>{{ section.content }}</pre>
+      </details>
+    </section>
+
+    <ion-text color="medium" aria-live="polite" *ngIf="isDirty">
+      <p class="status-message">Cambios sin guardar</p>
+    </ion-text>
+
+    <ion-text color="success" aria-live="polite" *ngIf="statusMessage">
+      <p class="status-message">{{ statusMessage }}</p>
+    </ion-text>
+
+    <ion-text color="danger" role="alert" *ngIf="errorMessage">
+      <p class="status-message">{{ errorMessage }}</p>
+    </ion-text>
+  </main>
+
+  <ng-template #loadingState>
+    <p class="loading-message" aria-live="polite">Cargando nota...</p>
+  </ng-template>
+</ion-content>

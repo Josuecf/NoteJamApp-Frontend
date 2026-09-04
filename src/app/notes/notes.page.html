@@ -1,0 +1,54 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="backToFolders()">Carpetas</ion-button>
+    </ion-buttons>
+    <ion-title>Notas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <main class="notes-container">
+    <form class="new-note-form" (ngSubmit)="createNote()">
+      <ion-input
+        [(ngModel)]="newNoteTitle"
+        name="newNoteTitle"
+        label="Nueva nota"
+        labelPlacement="stacked"
+        placeholder="Ej. A Ti la Gloria"
+      ></ion-input>
+      <ion-button type="submit" [disabled]="!newNoteTitle.trim()">Crear</ion-button>
+    </form>
+
+    <ion-searchbar
+      [(ngModel)]="searchTerm"
+      name="searchTerm"
+      placeholder="Buscar por título"
+      show-clear-button="focus"
+    ></ion-searchbar>
+
+    <ion-text color="danger" role="alert" *ngIf="errorMessage">
+      <p class="error-message">{{ errorMessage }}</p>
+    </ion-text>
+
+    <ng-container *ngIf="notes$ | async as notes">
+      <ng-container *ngIf="filterNotes(notes) as filteredNotes">
+        <ion-list *ngIf="filteredNotes.length; else emptyState">
+          <ion-item *ngFor="let note of filteredNotes" button (click)="openNote(note.id)">
+            <ion-label>{{ note.title }}</ion-label>
+            <ion-button color="danger" fill="clear" slot="end" (click)="$event.stopPropagation(); deleteNote(note.id, note.title)">
+              Eliminar
+            </ion-button>
+          </ion-item>
+        </ion-list>
+      </ng-container>
+    </ng-container>
+
+    <ng-template #emptyState>
+      <section class="empty-state">
+        <h1>No hay notas</h1>
+        <p>Crea una nota o cambia la búsqueda.</p>
+      </section>
+    </ng-template>
+  </main>
+</ion-content>

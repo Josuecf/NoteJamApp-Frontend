@@ -1,0 +1,44 @@
+.notes-container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.new-note-form {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+}
+
+.new-note-form ion-input {
+  flex: 1;
+}
+
+ion-searchbar {
+  padding-inline: 0;
+  margin-top: 16px;
+}
+
+.error-message {
+  margin: 16px 0;
+}
+
+.empty-state {
+  padding: 56px 24px;
+  text-align: center;
+}
+
+.empty-state p {
+  color: var(--ion-color-medium);
+}
+
+@media (max-width: 600px) {
+  .notes-container {
+    padding: 16px;
+  }
+
+  .new-note-form {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,97 @@
+import { Injectable } from '@angular/core';
+import { addDoc, collection, deleteDoc, doc, onSnapshot, query, serverTimestamp, updateDoc, where } from 'firebase/firestore';
+import { Observable, of, switchMap } from 'rxjs';
+
+import { AuthService } from '../auth/auth.service';
+import { firebaseFirestore } from '../firebase/firebase';
+import { Note } from './note.model';
+
+@Injectable({ providedIn: 'root' })
+export class NoteService {
+  private readonly firestore = firebaseFirestore;
+
+  constructor(private readonly authService: AuthService) {}
+
+  forFolder(folderId: string): Observable<Note[]> {
+    return this.authService.user$.pipe(
+      switchMap((user) => {
+        if (!user || !this.firestore) {
+          return of([]);
+        }
+
+        const notesQuery = query(
+          collection(this.firestore, 'notes'),
+          where('userId', '==', user.uid)
+        );
+
+        return new Observable<Note[]>((subscriber) => onSnapshot(
+          notesQuery,
+          (snapshot) => subscriber.next(snapshot.docs
+            .map((note) => ({
+              id: note.id,
+              ...note.data()
+            } as Note))
+            .filter((note) => note.folderId === folderId)
+            .sort((first, second) => first.title.localeCompare(second.title))),
+          (error) => subscriber.error(error)
+        ));
+      })
+    );
+  }
+
+  create(folderId: string, title: string) {
+    const user = this.authService.currentUser;
+    const normalizedTitle = title.trim();
+
+    if (!user || !this.firestore || !folderId || !normalizedTitle) {
+      return Promise.reject(new Error('El título de la nota es obligatorio'));
+    }
+
+    return addDoc(collection(this.firestore, 'notes'), {
+      userId: user.uid,
+      folderId,
+      title: normalizedTitle,
+      content: '',
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    });
+  }
+
+  delete(noteId: string) {
+    if (!this.firestore) {
+      return Promise.reject(new Error('Firestore no esta configurado'));
+    }
+
+    return deleteDoc(doc(this.firestore, 'notes', noteId));
+  }
+
+  watch(noteId: string): Observable<Note | null> {
+    if (!this.firestore || !noteId) {
+      return of(null);
+    }
+
+    return new Observable<Note | null>((subscriber) => onSnapshot(
+      doc(this.firestore!, 'notes', noteId),
+      (snapshot) => subscriber.next(snapshot.exists() ? {
+        id: snapshot.id,
+        ...snapshot.data()
+      } as Note : null),
+      (error) => subscriber.error(error)
+    ));
+  }
+
+  update(noteId: string, title: string, content: string) {
+    const normalizedTitle = title.trim();
+
+    if (!this.firestore || !noteId || !normalizedTitle) {
+      return Promise.reject(new Error('El título de la nota es obligatorio'));
+    }
+
+    return updateDoc(doc(this.firestore, 'notes', noteId), {
+      title: normalizedTitle,
+      content,
+      updatedAt: serverTimestamp()
+    });
+  }
+
+}

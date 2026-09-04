@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>NoteJam</ion-title>
+    <ion-title>Carpetas</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="logout()">Cerrar sesión</ion-button>
     </ion-buttons>
@@ -8,8 +8,41 @@
 </ion-header>
 
 <ion-content>
-  <div class="session-message">
-    <h1>Sesión iniciada</h1>
-    <p>La autenticación está configurada correctamente.</p>
-  </div>
+  <main class="folders-container">
+    <form class="new-folder-form" (ngSubmit)="createFolder()">
+      <ion-input
+        [(ngModel)]="newFolderName"
+        name="newFolderName"
+        label="Nueva carpeta"
+        labelPlacement="stacked"
+        placeholder="Ej. Alabanza"
+      ></ion-input>
+      <ion-button type="submit" [disabled]="!newFolderName.trim()">Crear</ion-button>
+    </form>
+
+    <ion-text color="danger" role="alert" *ngIf="errorMessage">
+      <p class="error-message">{{ errorMessage }}</p>
+    </ion-text>
+
+    <ng-container *ngIf="folders$ | async as folders">
+      <ion-list *ngIf="folders.length; else emptyState">
+        <ion-item *ngFor="let folder of folders" button (click)="openFolder(folder.id)">
+          <ion-label>{{ folder.name }}</ion-label>
+          <ion-button fill="clear" slot="end" (click)="$event.stopPropagation(); renameFolder(folder.id, folder.name)">
+            Renombrar
+          </ion-button>
+          <ion-button color="danger" fill="clear" slot="end" (click)="$event.stopPropagation(); deleteFolder(folder.id, folder.name)">
+            Eliminar
+          </ion-button>
+        </ion-item>
+      </ion-list>
+    </ng-container>
+
+    <ng-template #emptyState>
+      <section class="empty-state">
+        <h1>Aún no tienes carpetas</h1>
+        <p>Crea una carpeta para empezar a organizar tus notas.</p>
+      </section>
+    </ng-template>
+  </main>
 </ion-content>

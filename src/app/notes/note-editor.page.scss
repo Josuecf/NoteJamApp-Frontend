@@ -1,0 +1,56 @@
+.editor-container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.note-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.note-content {
+  min-height: 55vh;
+  line-height: 1.6;
+}
+
+.sections-preview {
+  margin-top: 32px;
+}
+
+.sections-preview h2 {
+  font-size: 18px;
+}
+
+details {
+  border-top: 1px solid var(--ion-color-light-shade);
+  padding: 14px 0;
+}
+
+summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+pre {
+  font: inherit;
+  line-height: 1.6;
+  margin: 16px 0 0;
+  white-space: pre-wrap;
+}
+
+.status-message,
+.loading-message {
+  margin: 16px 0;
+}
+
+@media (max-width: 600px) {
+  .editor-container {
+    padding: 16px;
+  }
+
+  .note-title {
+    font-size: 21px;
+  }
+}

@@ -20,3 +20,9 @@ ion-button {
 .error-message {
   margin: 16px 0 0;
 }
+
+@media (max-width: 600px) {
+  .login-container {
+    padding: 16px;
+  }
+}

@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Auth, browserLocalPersistence, getAuth, onAuthStateChanged, setPersistence, signInWithEmailAndPassword, signOut, User } from 'firebase/auth';
-import { initializeApp } from 'firebase/app';
-import { Observable } from 'rxjs';
+import { browserLocalPersistence, onAuthStateChanged, setPersistence, signInWithEmailAndPassword, signOut, User } from 'firebase/auth';
+import { Observable, shareReplay } from 'rxjs';
 
-import { environment } from '../../environments/environment';
+import { firebaseAuth } from '../firebase/firebase';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly auth = this.createAuth();
+  private readonly auth = firebaseAuth;
 
   readonly user$ = new Observable<User | null>((subscriber) => {
     if (!this.auth) {
@@ -17,7 +16,13 @@ export class AuthService {
     }
 
     return onAuthStateChanged(this.auth, subscriber);
-  });
+  }).pipe(
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
+  get currentUser() {
+    return this.auth?.currentUser ?? null;
+  }
 
   login(email: string, password: string) {
     const auth = this.auth;
@@ -34,11 +39,4 @@ export class AuthService {
     return this.auth ? signOut(this.auth) : Promise.resolve();
   }
 
-  private createAuth(): Auth | null {
-    if (!environment.firebase.apiKey || !environment.firebase.projectId) {
-      return null;
-    }
-
-    return getAuth(initializeApp(environment.firebase));
-  }
 }

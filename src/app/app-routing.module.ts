@@ -14,6 +14,11 @@ const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'notes/:folderId',
+    loadChildren: () => import('./notes/notes.module').then((m) => m.NotesPageModule),
+    canActivate: [authGuard]
+  },
+  {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full'

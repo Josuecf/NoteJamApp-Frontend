@@ -1,4 +1,39 @@
-.session-message {
+.folders-container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.new-folder-form {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+}
+
+.new-folder-form ion-input {
+  flex: 1;
+}
+
+.error-message {
+  margin: 16px 0;
+}
+
+.empty-state {
+  padding: 56px 24px;
   text-align: center;
-  padding: 64px 24px;
+}
+
+.empty-state p {
+  color: var(--ion-color-medium);
+}
+
+@media (max-width: 600px) {
+  .folders-container {
+    padding: 16px;
+  }
+
+  .new-folder-form {
+    align-items: stretch;
+    flex-direction: column;
+  }
 }
