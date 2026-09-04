@@ -1,178 +1,156 @@
+.folders-toolbar {
+  --background: var(--nc-background);
+  --border-width: 0;
+  padding-inline: var(--nc-page-gutter);
+}
+
+.add-button {
+  --background: var(--nc-primary);
+  --border-radius: var(--nc-radius-round);
+  --color: #fff;
+  height: 38px;
+  width: 38px;
+}
+
 .folders-container {
-  max-width: var(--notechord-content-width);
   margin: 0 auto;
-  padding: 20px 20px 96px;
+  max-width: var(--nc-content-wide);
+  padding: var(--nc-space-2) var(--nc-page-gutter) calc(92px + env(safe-area-inset-bottom));
 }
 
-.page-intro {
-  color: var(--ion-color-medium);
-  margin: -8px 0 16px;
+.page-heading {
+  margin-bottom: var(--nc-space-5);
 }
 
-ion-searchbar {
-  --background: var(--ion-color-light, #eef1f7);
-  --box-shadow: none;
-  --border-radius: var(--notechord-radius-small);
-  padding: 0;
-  margin-bottom: 18px;
+.page-heading p {
+  color: var(--nc-text-secondary);
+  font-size: var(--nc-font-size-caption);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin: 0 0 var(--nc-space-1);
+  text-transform: uppercase;
 }
 
-.new-folder-form {
-  background: var(--ion-card-background);
-  border: 1px solid var(--ion-border-color);
-  border-radius: var(--notechord-radius-small);
-  display: none;
-  gap: 12px;
-  margin-bottom: 16px;
-  padding: 14px;
-}
-
-.new-folder-form.is-visible {
-  align-items: stretch;
-  display: flex;
-  flex-direction: column;
-}
-
-.new-folder-form ion-input {
-  flex: 1;
-}
-
-.form-heading {
-  align-items: center;
-  display: flex;
-  gap: 12px;
-}
-
-.form-icon {
-  align-items: center;
-  background: #e3ebff;
-  border-radius: 12px;
-  color: var(--ion-color-primary);
-  display: flex;
-  height: 44px;
-  justify-content: center;
-  width: 44px;
-}
-
-.form-icon ion-icon {
-  font-size: 22px;
-}
-
-.form-heading h2,
-.form-heading p {
+.page-heading h1 {
+  font-size: clamp(2rem, 1.7rem + 1vw, 2.5rem);
+  letter-spacing: -0.035em;
+  line-height: var(--nc-line-height-tight);
   margin: 0;
 }
 
-.form-heading h2 {
-  font-size: 16px;
+ion-searchbar {
+  --background: var(--nc-surface-raised);
+  --border-radius: var(--nc-radius-md);
+  --box-shadow: var(--nc-shadow-sm);
+  --color: var(--nc-text);
+  --icon-color: var(--nc-text-secondary);
+  --placeholder-color: var(--nc-text-secondary);
+  border: 1px solid var(--nc-border);
+  border-radius: var(--nc-radius-md);
+  margin-bottom: var(--nc-space-5);
+  padding: 0;
 }
 
-.form-heading p {
-  color: var(--ion-color-medium);
-  font-size: 12px;
-  margin-top: 3px;
+.folder-list {
+  background: transparent;
+  padding: 0;
 }
 
-.error-message {
-  margin: 16px 0;
-}
-
-.empty-state {
-  padding: 56px 24px;
-  text-align: center;
-}
-
-.empty-state p {
-  color: var(--ion-color-medium);
+ion-item-sliding {
+  background: transparent;
 }
 
 ion-item {
-  --background: var(--ion-card-background);
-  --border-radius: var(--notechord-radius-small);
-  --inner-padding-end: 8px;
-  margin-bottom: 8px;
+  --background: transparent;
+  --border-color: var(--nc-border);
+  --inner-padding-end: var(--nc-space-3);
+  --min-height: 70px;
+  --padding-start: 0;
+}
+
+ion-item:last-child {
+  --border-width: 0;
 }
 
 .folder-icon {
   align-items: center;
-  border-radius: 10px;
+  border-radius: var(--nc-radius-sm);
   display: flex;
+  flex: 0 0 42px;
   height: 42px;
   justify-content: center;
-  margin-right: 12px;
+  margin-right: var(--nc-space-3);
   width: 42px;
 }
 
 .folder-icon ion-icon {
-  font-size: 22px;
+  font-size: 24px;
 }
 
-.folder-color-0 { background: #e3ebff; color: #3157d5; }
-.folder-color-1 { background: #def3ed; color: #397d6b; }
-.folder-color-2 { background: #fff0d8; color: #c27b24; }
-.folder-color-3 { background: #f9e1e6; color: #c94d5a; }
-.folder-color-4 { background: #e9e3f8; color: #7455a8; }
+.folder-color-0 { background: #e9efff; color: #3164f4; }
+.folder-color-1 { background: #def7f1; color: #159a7d; }
+.folder-color-2 { background: #fff1f2; color: #e5485d; }
+.folder-color-3 { background: #fff4db; color: #d28a17; }
+.folder-color-4 { background: #f0eaff; color: #7c4ee8; }
 
 ion-label h2 {
-  font-size: 16px;
-  font-weight: 600;
+  color: var(--nc-text);
+  font-size: var(--nc-font-size-body);
+  font-weight: 650;
   margin: 0;
 }
 
 ion-label p {
-  color: var(--ion-color-medium);
-  font-size: 12px;
-  margin: 4px 0 0;
+  color: var(--nc-text-secondary);
+  font-size: var(--nc-font-size-caption);
+  margin: var(--nc-space-1) 0 0;
 }
 
-.profile-button {
-  --background: var(--ion-color-primary);
-  --border-radius: 50%;
-  --color: var(--ion-color-primary-contrast);
-  font-size: 14px;
-  height: 34px;
-  min-height: 34px;
-  width: 34px;
+.row-chevron {
+  color: var(--nc-text-secondary);
+  font-size: 18px;
+  margin-left: 0;
 }
 
-ion-footer {
-  background: var(--ion-toolbar-background);
-  border-top: 1px solid var(--ion-border-color);
+.error-message {
+  margin: var(--nc-space-4) 0;
 }
 
-.bottom-navigation {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  margin: 0 auto;
-  max-width: var(--notechord-content-width);
-  padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+.empty-state {
+  margin: var(--nc-space-8) auto;
+  max-width: 360px;
+  padding: var(--nc-space-8) var(--nc-space-6);
+  text-align: center;
 }
 
-.bottom-navigation button {
-  align-items: center;
-  background: transparent;
-  border: 0;
-  color: var(--ion-color-medium);
-  display: flex;
-  flex-direction: column;
-  font: inherit;
-  font-size: 11px;
-  gap: 4px;
-  min-height: 44px;
+.empty-state h1 {
+  font-size: var(--nc-font-size-section);
+  margin-bottom: var(--nc-space-2);
 }
 
-.bottom-navigation button.active {
-  color: var(--ion-color-primary);
-  font-weight: 600;
+.empty-state p {
+  color: var(--nc-text-secondary);
+  margin: 0;
 }
 
-.bottom-navigation ion-icon {
-  font-size: 20px;
+ion-fab {
+  bottom: calc(var(--nc-space-5) + env(safe-area-inset-bottom));
+  right: var(--nc-page-gutter);
 }
 
-@media (max-width: 600px) {
+ion-fab-button {
+  --background: var(--nc-primary);
+  --box-shadow: var(--nc-shadow-overlay);
+  --color: #fff;
+}
+
+@media (min-width: 768px) {
   .folders-container {
-    padding: 16px 16px 92px;
+    padding-top: var(--nc-space-6);
+  }
+
+  .folder-list {
+    max-width: 720px;
   }
 
 }

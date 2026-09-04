@@ -1,7 +1,11 @@
 import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Keyboard } from '@capacitor/keyboard';
+import { Observable, Subscription } from 'rxjs';
+import { AlertController } from '@ionic/angular';
 
+import { Folder } from '../folders/folder.model';
+import { FolderService } from '../folders/folder.service';
 import { NoteService } from './note.service';
 
 interface NoteSection {
@@ -18,6 +22,7 @@ interface NoteSection {
 export class NoteEditorPage implements OnDestroy {
   readonly folderId: string;
   readonly noteId: string;
+  readonly folder$: Observable<Folder | null>;
   title = '';
   content = '';
   errorMessage = '';
@@ -25,21 +30,28 @@ export class NoteEditorPage implements OnDestroy {
   isLoading = true;
   isSaving = false;
   isDirty = false;
+  isViewMode = false;
+  isOptionsOpen = false;
+  updatedAtLabel = '';
   sections: NoteSection[] = [];
   private readonly noteSubscription: Subscription;
 
   constructor(
     private readonly route: ActivatedRoute,
     private readonly router: Router,
-    private readonly noteService: NoteService
+    private readonly noteService: NoteService,
+    private readonly folderService: FolderService,
+    private readonly alertController: AlertController
   ) {
     this.folderId = this.route.snapshot.paramMap.get('folderId') ?? '';
     this.noteId = this.route.snapshot.paramMap.get('noteId') ?? '';
+    this.folder$ = this.folderService.watch(this.folderId);
     this.noteSubscription = this.noteService.watch(this.noteId).subscribe({
       next: (note) => {
         if (note && !this.isDirty) {
           this.title = note.title;
           this.content = note.content;
+          this.updatedAtLabel = this.formatUpdatedAt(note.updatedAt?.toDate?.());
           this.updateSections();
         }
         this.isLoading = false;
@@ -49,6 +61,58 @@ export class NoteEditorPage implements OnDestroy {
         this.isLoading = false;
       }
     });
+  }
+
+  async setViewMode(isViewMode: boolean) {
+    if (this.isViewMode === isViewMode) {
+      return;
+    }
+
+    if (isViewMode) {
+      (document.activeElement as HTMLElement | null)?.blur?.();
+      await Keyboard.hide().catch(() => undefined);
+    }
+
+    this.isViewMode = isViewMode;
+  }
+
+  toggleViewMode() {
+    return this.setViewMode(!this.isViewMode);
+  }
+
+  openOptions() {
+    this.isOptionsOpen = true;
+  }
+
+  closeOptions() {
+    this.isOptionsOpen = false;
+  }
+
+  async deleteNote() {
+    this.closeOptions();
+
+    const alert = await this.alertController.create({
+      header: 'Eliminar nota',
+      message: `¿Quieres eliminar “${this.title}”?`,
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: () => void this.performDelete()
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  private async performDelete() {
+    try {
+      await this.noteService.delete(this.noteId);
+      await this.backToNotes();
+    } catch {
+      this.errorMessage = 'No se pudo eliminar la nota.';
+    }
   }
 
   async save() {
@@ -85,6 +149,28 @@ export class NoteEditorPage implements OnDestroy {
   onContentChange() {
     this.markDirty();
     this.updateSections();
+  }
+
+  private formatUpdatedAt(date?: Date) {
+    if (!date) {
+      return 'Guardando…';
+    }
+
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const noteDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const difference = Math.round((today.getTime() - noteDay.getTime()) / 86400000);
+    const time = new Intl.DateTimeFormat('es-PE', { hour: '2-digit', minute: '2-digit' }).format(date);
+
+    if (difference === 0) {
+      return `Hoy, ${time}`;
+    }
+
+    if (difference === 1) {
+      return `Ayer, ${time}`;
+    }
+
+    return new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: 'short' }).format(date);
   }
 
   private updateSections() {

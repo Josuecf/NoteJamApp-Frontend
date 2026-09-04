@@ -1,40 +1,30 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>Mis carpetas</ion-title>
+  <ion-toolbar class="folders-toolbar">
     <ion-buttons slot="end">
-      <ion-button class="profile-button" (click)="logout()" aria-label="Cerrar sesión">J</ion-button>
+      <ion-button (click)="openSettings()" aria-label="Abrir ajustes">
+        <ion-icon slot="icon-only" name="ellipsis-horizontal"></ion-icon>
+      </ion-button>
+      <ion-button class="add-button" (click)="openCreateFolder()" aria-label="Nueva carpeta">
+        <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <main class="folders-container">
-    <p class="page-intro">Organiza tus notas musicales</p>
+    <header class="page-heading">
+      <p>NoteChord</p>
+      <h1>Carpetas</h1>
+    </header>
 
     <ion-searchbar
+      #folderSearch
       [(ngModel)]="searchTerm"
       name="searchTerm"
       placeholder="Buscar carpetas..."
       show-clear-button="focus"
     ></ion-searchbar>
-
-    <form class="new-folder-form" [class.is-visible]="isCreateFormVisible" (ngSubmit)="createFolder()">
-      <div class="form-heading">
-        <div class="form-icon"><ion-icon name="folder-open-outline"></ion-icon></div>
-        <div>
-          <h2>Nueva carpeta</h2>
-          <p>Organiza tus cifrados por tema.</p>
-        </div>
-      </div>
-      <ion-input
-        [(ngModel)]="newFolderName"
-        name="newFolderName"
-        label="Nombre de la carpeta"
-        labelPlacement="stacked"
-        placeholder="Ej. Alabanza"
-      ></ion-input>
-      <ion-button expand="block" type="submit" [disabled]="!newFolderName.trim()">Guardar carpeta</ion-button>
-    </form>
 
     <ion-text color="danger" role="alert" *ngIf="errorMessage">
       <p class="error-message">{{ errorMessage }}</p>
@@ -42,24 +32,27 @@
 
     <ng-container *ngIf="folders$ | async as folders">
       <ng-container *ngIf="filterFolders(folders) as filteredFolders">
-        <ion-list *ngIf="filteredFolders.length; else emptyState">
-          <ion-item *ngFor="let folder of filteredFolders; let index = index" button (click)="openFolder(folder.id)">
-            <div class="folder-icon" [class]="'folder-color-' + (index % 5)" slot="start">
-              <ion-icon name="folder-open-outline"></ion-icon>
-            </div>
-            <ion-label>
-              <h2>{{ folder.name }}</h2>
-              <p>Carpeta de cifrados</p>
-            </ion-label>
-            <ion-buttons slot="end">
-              <ion-button fill="clear" (click)="$event.stopPropagation(); renameFolder(folder.id, folder.name)" aria-label="Renombrar carpeta">
-                <ion-icon slot="icon-only" name="ellipsis-horizontal"></ion-icon>
-              </ion-button>
-              <ion-button color="danger" fill="clear" (click)="$event.stopPropagation(); deleteFolder(folder.id, folder.name)" aria-label="Eliminar carpeta">
+        <ion-list class="folder-list" *ngIf="filteredFolders.length; else emptyState">
+          <ion-item-sliding *ngFor="let folder of filteredFolders; let index = index">
+            <ion-item button detail="false" (click)="openFolder(folder.id)">
+              <div class="folder-icon" [class]="'folder-color-' + (index % 5)" slot="start">
+                <ion-icon name="folder" [style.color]="folder.color || null"></ion-icon>
+              </div>
+              <ion-label>
+                <h2>{{ folder.name }}</h2>
+                <p *ngIf="noteCounts$ | async as counts">{{ counts[folder.id] || 0 }} {{ (counts[folder.id] || 0) === 1 ? 'nota' : 'notas' }}</p>
+              </ion-label>
+              <ion-icon class="row-chevron" name="chevron-forward-outline" slot="end" aria-hidden="true"></ion-icon>
+            </ion-item>
+            <ion-item-options side="end">
+              <ion-item-option color="primary" (click)="openEditFolder(folder)">
+                <ion-icon slot="icon-only" name="pencil-outline"></ion-icon>
+              </ion-item-option>
+              <ion-item-option color="danger" (click)="deleteFolder(folder.id, folder.name)">
                 <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-              </ion-button>
-            </ion-buttons>
-          </ion-item>
+              </ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
         </ion-list>
       </ng-container>
     </ng-container>
@@ -72,8 +65,8 @@
     </ng-template>
 
     <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-      <ion-fab-button (click)="toggleCreateForm()" aria-label="Nueva carpeta">
-        <ion-icon [name]="isCreateFormVisible ? 'close-outline' : 'add-outline'"></ion-icon>
+      <ion-fab-button (click)="openCreateFolder()" aria-label="Nueva carpeta">
+        <ion-icon name="add-outline"></ion-icon>
       </ion-fab-button>
     </ion-fab>
   </main>
@@ -82,16 +75,12 @@
 <ion-footer>
   <nav class="bottom-navigation" aria-label="Navegación principal">
     <button class="active" type="button" aria-current="page">
-      <ion-icon name="folder-open-outline"></ion-icon>
+      <ion-icon name="folder"></ion-icon>
       <span>Carpetas</span>
     </button>
-    <button type="button" (click)="searchTerm = ''">
+    <button type="button" (click)="focusSearch()">
       <ion-icon name="search-outline"></ion-icon>
       <span>Buscar</span>
-    </button>
-    <button type="button" (click)="toggleCreateForm()">
-      <ion-icon name="add-circle-outline"></ion-icon>
-      <span>Nueva</span>
     </button>
     <button type="button" (click)="openSettings()">
       <ion-icon name="settings-outline"></ion-icon>
@@ -99,3 +88,61 @@
     </button>
   </nav>
 </ion-footer>
+
+<ion-modal class="folder-modal" [isOpen]="isFolderFormOpen" (didDismiss)="closeFolderForm()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button (click)="closeFolderForm()">Cancelar</ion-button>
+        </ion-buttons>
+        <ion-title>{{ editingFolder ? 'Editar carpeta' : 'Nueva carpeta' }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button class="save-button" strong="true" [disabled]="!folderName.trim()" (click)="saveFolder()">Guardar</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <form class="folder-form" (ngSubmit)="saveFolder()">
+        <div class="folder-form-icon" aria-hidden="true">
+          <ion-icon name="folder-outline"></ion-icon>
+        </div>
+        <ion-input
+          [(ngModel)]="folderName"
+          name="folderName"
+          label="Nombre"
+          labelPlacement="stacked"
+          placeholder="Ej. Alabanza"
+          enterkeyhint="done"
+          autofocus="true"
+        ></ion-input>
+        <fieldset class="color-picker">
+          <legend>Color</legend>
+          <button
+            *ngFor="let color of folderColors"
+            type="button"
+            [style.background]="color"
+            [class.selected]="folderColor === color"
+            (click)="folderColor = color"
+            [attr.aria-label]="'Seleccionar color ' + color"
+            [attr.aria-pressed]="folderColor === color"
+          >
+            <ion-icon *ngIf="folderColor === color" name="checkmark-outline"></ion-icon>
+          </button>
+        </fieldset>
+        <ion-textarea
+          [(ngModel)]="folderDescription"
+          name="folderDescription"
+          label="Descripción (opcional)"
+          labelPlacement="stacked"
+          placeholder="Describe esta carpeta..."
+          rows="4"
+        ></ion-textarea>
+        <ion-text color="danger" role="alert" *ngIf="errorMessage">
+          <p class="error-message">{{ errorMessage }}</p>
+        </ion-text>
+        <button class="hidden-submit" type="submit" [disabled]="!folderName.trim()">Guardar</button>
+      </form>
+    </ion-content>
+  </ng-template>
+</ion-modal>

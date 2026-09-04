@@ -2,79 +2,75 @@
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button (click)="backToFolders()" aria-label="Volver a carpetas">
-        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+        <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>Ajustes</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <main class="settings-container">
+    <h1>Ajustes</h1>
+
     <ng-container *ngIf="user$ | async as user">
       <section class="profile-section">
         <div class="profile-avatar">{{ (user.email || 'J').charAt(0).toUpperCase() }}</div>
         <div>
-          <h1>{{ user.displayName || 'Mi cuenta' }}</h1>
+          <h2>{{ user.displayName || 'Mi cuenta' }}</h2>
           <p>{{ user.email }}</p>
         </div>
       </section>
     </ng-container>
 
-    <section class="settings-group">
-      <p class="group-label">Estado</p>
-      <ion-item>
-        <ion-icon slot="start" name="cloud-done-outline"></ion-icon>
-        <ion-label>
-          <h2>Sincronización</h2>
-          <p>Tus cambios se sincronizan automáticamente</p>
-        </ion-label>
-        <span class="online-status">Activa</span>
-      </ion-item>
+    <section class="settings-group appearance-group">
+      <div class="group-heading">
+        <ion-icon name="contrast-outline"></ion-icon>
+        <div>
+          <h2>Apariencia</h2>
+          <p>Selecciona cómo quieres ver NoteChord</p>
+        </div>
+      </div>
+      <div class="appearance-options" role="radiogroup" aria-label="Apariencia">
+        <button type="button" role="radio" [class.selected]="appearance === 'light'" [attr.aria-checked]="appearance === 'light'" (click)="setAppearance('light')">
+          <span class="theme-preview light-preview"><i></i><i></i></span>
+          <span>Claro</span>
+          <ion-icon *ngIf="appearance === 'light'" name="checkmark-circle"></ion-icon>
+        </button>
+        <button type="button" role="radio" [class.selected]="appearance === 'dark'" [attr.aria-checked]="appearance === 'dark'" (click)="setAppearance('dark')">
+          <span class="theme-preview dark-preview"><i></i><i></i></span>
+          <span>Oscuro</span>
+          <ion-icon *ngIf="appearance === 'dark'" name="checkmark-circle"></ion-icon>
+        </button>
+        <button type="button" role="radio" [class.selected]="appearance === 'system'" [attr.aria-checked]="appearance === 'system'" (click)="setAppearance('system')">
+          <span class="theme-preview system-preview"><i></i><i></i></span>
+          <span>Sistema</span>
+          <ion-icon *ngIf="appearance === 'system'" name="checkmark-circle"></ion-icon>
+        </button>
+      </div>
     </section>
 
-    <section class="settings-group">
-      <p class="group-label">Aplicación</p>
-      <ion-item>
-        <ion-icon slot="start" name="information-circle-outline"></ion-icon>
-        <ion-label>
-          <h2>Acerca de NoteChord</h2>
-          <p>Notas musicales y cifrados</p>
-        </ion-label>
-      </ion-item>
-      <ion-item>
-        <ion-icon slot="start" name="help-circle-outline"></ion-icon>
-        <ion-label>
-          <h2>Ayuda</h2>
-          <p>Información de uso y soporte</p>
-        </ion-label>
-      </ion-item>
+    <section class="settings-list">
+      <button type="button" (click)="showInformation('Sincronización', 'Tus carpetas y notas se sincronizan automáticamente mediante Cloud Firestore.')">
+        <ion-icon name="sync-outline"></ion-icon>
+        <span>Sincronización</span>
+        <small>Automática</small>
+        <i class="status-dot" aria-hidden="true"></i>
+      </button>
+      <button type="button" (click)="showInformation('Ayuda', 'Crea carpetas, añade notas y utiliza Vista para leer tus cifrados sin riesgo de editarlos.')">
+        <ion-icon name="help-circle-outline"></ion-icon>
+        <span>Ayuda</span>
+        <ion-icon class="chevron" name="chevron-forward-outline"></ion-icon>
+      </button>
+      <button type="button" (click)="showInformation('Acerca de NoteChord', 'NoteChord · Notas musicales y cifrados.')">
+        <ion-icon name="information-circle-outline"></ion-icon>
+        <span>Acerca de</span>
+        <ion-icon class="chevron" name="chevron-forward-outline"></ion-icon>
+      </button>
     </section>
 
-    <ion-button class="logout-button" expand="block" fill="outline" color="danger" (click)="logout()">
+    <ion-button class="logout-button" expand="block" fill="clear" color="danger" (click)="logout()">
       <ion-icon slot="start" name="log-out-outline"></ion-icon>
       Cerrar sesión
     </ion-button>
   </main>
 </ion-content>
-
-<ion-footer>
-  <nav class="bottom-navigation" aria-label="Navegación principal">
-    <button type="button" (click)="backToFolders()">
-      <ion-icon name="folder-open-outline"></ion-icon>
-      <span>Carpetas</span>
-    </button>
-    <button type="button" (click)="backToFolders()">
-      <ion-icon name="search-outline"></ion-icon>
-      <span>Buscar</span>
-    </button>
-    <button type="button" (click)="backToFolders()">
-      <ion-icon name="add-circle-outline"></ion-icon>
-      <span>Nueva</span>
-    </button>
-    <button class="active" type="button" aria-current="page">
-      <ion-icon name="settings-outline"></ion-icon>
-      <span>Ajustes</span>
-    </button>
-  </nav>
-</ion-footer>

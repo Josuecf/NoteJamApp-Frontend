@@ -51,7 +51,7 @@ export class FolderService {
     ));
   }
 
-  create(name: string) {
+  create(name: string, color?: string, description?: string) {
     const user = this.authService.currentUser;
     const normalizedName = name.trim();
 
@@ -62,12 +62,14 @@ export class FolderService {
     return addDoc(collection(this.firestore, 'folders'), {
       userId: user.uid,
       name: normalizedName,
+      color: color || '#3164F4',
+      description: description?.trim() || '',
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     });
   }
 
-  rename(folderId: string, name: string) {
+  rename(folderId: string, name: string, color?: string, description?: string) {
     const normalizedName = name.trim();
 
     if (!this.firestore || !normalizedName) {
@@ -76,6 +78,8 @@ export class FolderService {
 
     return updateDoc(doc(this.firestore, 'folders', folderId), {
       name: normalizedName,
+      ...(color !== undefined ? { color } : {}),
+      ...(description !== undefined ? { description: description.trim() } : {}),
       updatedAt: serverTimestamp()
     });
   }

@@ -5,6 +5,11 @@ import { authGuard } from './auth/auth.guard';
 
 const routes: Routes = [
   {
+    path: '',
+    loadChildren: () => import('./splash/splash.module').then((m) => m.SplashPageModule),
+    pathMatch: 'full'
+  },
+  {
     path: 'login',
     loadChildren: () => import('./login/login.module').then((m) => m.LoginPageModule)
   },
@@ -22,11 +27,6 @@ const routes: Routes = [
     path: 'settings',
     loadChildren: () => import('./settings/settings.module').then((m) => m.SettingsPageModule),
     canActivate: [authGuard]
-  },
-  {
-    path: '',
-    redirectTo: 'login',
-    pathMatch: 'full'
   },
 ];
 

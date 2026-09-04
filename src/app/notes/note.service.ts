@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { addDoc, collection, deleteDoc, doc, onSnapshot, query, serverTimestamp, updateDoc, where } from 'firebase/firestore';
-import { Observable, of, switchMap } from 'rxjs';
+import { Observable, map, of, shareReplay, switchMap } from 'rxjs';
 
 import { AuthService } from '../auth/auth.service';
 import { firebaseFirestore } from '../firebase/firebase';
@@ -9,6 +9,33 @@ import { Note } from './note.model';
 @Injectable({ providedIn: 'root' })
 export class NoteService {
   private readonly firestore = firebaseFirestore;
+
+  readonly countsByFolder$ = this.authService.user$.pipe(
+    switchMap((user) => {
+      if (!user || !this.firestore) {
+        return of([] as Note[]);
+      }
+
+      const notesQuery = query(
+        collection(this.firestore, 'notes'),
+        where('userId', '==', user.uid)
+      );
+
+      return new Observable<Note[]>((subscriber) => onSnapshot(
+        notesQuery,
+        (snapshot) => subscriber.next(snapshot.docs.map((note) => ({
+          id: note.id,
+          ...note.data()
+        } as Note))),
+        (error) => subscriber.error(error)
+      ));
+    }),
+    map((notes) => notes.reduce<Record<string, number>>((counts, note) => {
+      counts[note.folderId] = (counts[note.folderId] ?? 0) + 1;
+      return counts;
+    }, {})),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
 
   constructor(private readonly authService: AuthService) {}
 
@@ -39,7 +66,7 @@ export class NoteService {
     );
   }
 
-  create(folderId: string, title: string) {
+  create(folderId: string, title: string, content = '') {
     const user = this.authService.currentUser;
     const normalizedTitle = title.trim();
 
@@ -51,7 +78,7 @@ export class NoteService {
       userId: user.uid,
       folderId,
       title: normalizedTitle,
-      content: '',
+      content,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     });

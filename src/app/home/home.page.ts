@@ -1,9 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
+import { IonSearchbar } from '@ionic/angular';
+import { AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 
 import { AuthService } from '../auth/auth.service';
 import { FolderService } from '../folders/folder.service';
 import { Folder } from '../folders/folder.model';
+import { NoteService } from '../notes/note.service';
 
 @Component({
   selector: 'app-home',
@@ -12,16 +15,24 @@ import { Folder } from '../folders/folder.model';
   standalone: false,
 })
 export class HomePage {
+  readonly folderColors = ['#3164F4', '#54C7B0', '#F0647A', '#F5B544', '#9165E8', '#AEB7C8'];
+  @ViewChild('folderSearch') folderSearch?: IonSearchbar;
   readonly folders$ = this.folderService.folders$;
-  newFolderName = '';
+  readonly noteCounts$ = this.noteService.countsByFolder$;
+  folderName = '';
+  folderColor = this.folderColors[0];
+  folderDescription = '';
   searchTerm = '';
-  isCreateFormVisible = false;
+  isFolderFormOpen = false;
+  editingFolder: Folder | null = null;
   errorMessage = '';
 
   constructor(
     private readonly authService: AuthService,
     private readonly folderService: FolderService,
-    private readonly router: Router
+    private readonly noteService: NoteService,
+    private readonly router: Router,
+    private readonly alertController: AlertController
   ) {}
 
   openFolder(folderId: string) {
@@ -30,6 +41,10 @@ export class HomePage {
 
   openSettings() {
     return this.router.navigateByUrl('/settings');
+  }
+
+  async focusSearch() {
+    await this.folderSearch?.setFocus();
   }
 
   filterFolders(folders: Folder[]) {
@@ -42,42 +57,65 @@ export class HomePage {
     return folders.filter((folder) => folder.name.toLocaleLowerCase().includes(search));
   }
 
-  toggleCreateForm() {
-    this.isCreateFormVisible = !this.isCreateFormVisible;
+  openCreateFolder() {
+    this.editingFolder = null;
+    this.folderName = '';
+    this.folderColor = this.folderColors[0];
+    this.folderDescription = '';
+    this.isFolderFormOpen = true;
     this.errorMessage = '';
   }
 
-  async createFolder() {
+  openEditFolder(folder: Folder) {
+    this.editingFolder = folder;
+    this.folderName = folder.name;
+    this.folderColor = folder.color || this.folderColors[0];
+    this.folderDescription = folder.description || '';
+    this.isFolderFormOpen = true;
+    this.errorMessage = '';
+  }
+
+  closeFolderForm() {
+    this.isFolderFormOpen = false;
+    this.editingFolder = null;
+    this.folderName = '';
+    this.folderColor = this.folderColors[0];
+    this.folderDescription = '';
+    this.errorMessage = '';
+  }
+
+  async saveFolder() {
     this.errorMessage = '';
 
     try {
-      await this.folderService.create(this.newFolderName);
-      this.newFolderName = '';
-      this.isCreateFormVisible = false;
+      if (this.editingFolder) {
+        await this.folderService.rename(this.editingFolder.id, this.folderName, this.folderColor, this.folderDescription);
+      } else {
+        await this.folderService.create(this.folderName, this.folderColor, this.folderDescription);
+      }
+      this.closeFolderForm();
     } catch {
       this.errorMessage = 'Escribe un nombre válido para la carpeta.';
     }
   }
 
-  async renameFolder(folderId: string, currentName: string) {
-    const name = window.prompt('Nuevo nombre de la carpeta', currentName);
-
-    if (name === null || name.trim() === currentName) {
-      return;
-    }
-
-    try {
-      await this.folderService.rename(folderId, name);
-    } catch {
-      this.errorMessage = 'No se pudo renombrar la carpeta.';
-    }
+  async deleteFolder(folderId: string, name: string) {
+    const alert = await this.alertController.create({
+      header: 'Eliminar carpeta',
+      message: `¿Quieres eliminar “${name}”?`,
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: () => void this.performFolderDelete(folderId)
+        }
+      ]
+    });
+    await alert.present();
   }
 
-  async deleteFolder(folderId: string, name: string) {
-    if (!window.confirm(`¿Eliminar la carpeta "${name}"?`)) {
-      return;
-    }
-
+  private async performFolderDelete(folderId: string) {
     try {
       await this.folderService.delete(folderId);
     } catch {
